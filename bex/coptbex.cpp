@@ -101,13 +101,38 @@ int bxPluginFini() {
  */
 bexfun_info_t * bxPluginFunctions() {
     // 已定义的插件函数个数
-    constexpr size_t TOTAL_PLUGIN_FUNCTIONS = 1;
+    constexpr size_t TOTAL_PLUGIN_FUNCTIONS = 6;
     bexfun_info_t* func_list_dyn = new bexfun_info_t[TOTAL_PLUGIN_FUNCTIONS + 1];
 
     size_t i = 0;
     func_list_dyn[i].name = "copt_version";
     func_list_dyn[i].ptr  = copt_version;
     func_list_dyn[i].help = copt_version_help;
+
+    i++;
+    func_list_dyn[i].name = "__copt_computeiis_impl";
+    func_list_dyn[i].ptr  = copt_computeiis;
+    func_list_dyn[i].help = nullptr;
+    
+    i++;
+    func_list_dyn[i].name = "__copt_feasrelax_impl";
+    func_list_dyn[i].ptr  = copt_feasrelax;
+    func_list_dyn[i].help = nullptr;
+    
+    i++;
+    func_list_dyn[i].name = "__copt_read_impl";
+    func_list_dyn[i].ptr  = copt_read;
+    func_list_dyn[i].help = nullptr;
+    
+    i++;
+    func_list_dyn[i].name = "__copt_solve_impl";
+    func_list_dyn[i].ptr  = copt_solve;
+    func_list_dyn[i].help = nullptr;
+    
+    i++;
+    func_list_dyn[i].name = "__copt_write_impl";
+    func_list_dyn[i].ptr  = copt_write;
+    func_list_dyn[i].help = nullptr;
 
     // 最后一个元素, `name` 字段必须为空字符串 `""`
     i++;
