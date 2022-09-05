@@ -3,6 +3,36 @@
 
 
 /* workaround */
+/**
+ * @brief 返回数组中的元素个数.
+ * 
+ * 如数组维度为 2x5x5，则返回 30
+ */
+size_t bxGetNumberOfElements(const bxArray *ba) {
+    // need mxGetDimensions, mxGetNumberOfDimensions
+    return bxGetM(ba) * bxGetN(ba);
+}
+
+/**
+ * @brief 为结构数组添加一个新成员名.
+ * 
+ */
+int bxAddField(bxArray *pm, const char *fieldname) {
+    return -1; // error
+};
+
+
+bool bxIsScalar(const bxArray* ba) {
+    return 1 == (bxGetM(ba)*bxGetN(ba));
+}
+
+double bxGetScalar(const bxArray* ba) {
+    return *bxGetDoubles(ba);
+}
+
+int mexEvalString(const char *command) {
+    return 1; // error
+};
 
 
 const char* copt_version_help = R"(
