@@ -103,7 +103,7 @@ static int COPTMEX_getString(const bxArray *in_array, char **out_str) {
     goto exit_cleanup;
   }
   
-  bxGetString(in_array, buffer, bufflen);
+  bxAsCStr(in_array, buffer, bufflen);
   *out_str = buffer;
 
 exit_cleanup:
@@ -1925,7 +1925,7 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
       }
 
       char cRowSense[2];
-      bxGetString(rSense, cRowSense, 2);
+      bxAsCStr(rSense, cRowSense, 2);
       double dRowBound = bxGetScalar(rowBnd);
 
       COPTMEX_CALL(COPT_AddIndicator(prob, binColIdx, binColVal, nRowMatCnt,
@@ -2087,13 +2087,13 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
       }
 
       if (QcSense != NULL) {
-        bxGetString(QcSense, qRowSense, 2);
+        bxAsCStr(QcSense, qRowSense, 2);
       } else {
         qRowSense[0] = COPT_LESS_EQUAL;
       }
       qRowBound = bxGetScalar(QcRhs);
       if (QcName != NULL) {
-        bxGetString(QcName, qRowName, COPT_BUFFSIZE);
+        bxAsCStr(QcName, qRowName, COPT_BUFFSIZE);
       }
 
       COPTMEX_CALL(COPT_AddQConstr(prob, nQRowElem, qRowMatIdx, qRowMatElem, 
