@@ -2,7 +2,7 @@
 
 void COPT_CALL COPTMEX_printLog(char *msg, void *userdata) {
   if (msg != NULL) {
-    mexPrintf("%s\n", msg);
+    bxPrintf("%s\n", msg);
     mexEvalString("drawnow;");
   }
 }

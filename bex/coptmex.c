@@ -220,7 +220,7 @@ int COPTMEX_dispBanner(void) {
   char msgbuf[COPT_BUFFSIZE];
 
   COPTMEX_CALL(COPT_GetBanner(msgbuf, COPT_BUFFSIZE));
-  mexPrintf("%s", msgbuf);
+  bxPrintf("%s", msgbuf);
 
 exit_cleanup:
   return retcode;

@@ -19,7 +19,7 @@
 #define COPTMEX_CALL(func) \
   do {                                                                         \
     if ((retcode = (func)) != COPT_RETCODE_OK) {                               \
-      mexPrintf("ERROR %d: %s:%d\n", retcode, __FILE__, __LINE__);             \
+      bxPrintf("ERROR %d: %s:%d\n", retcode, __FILE__, __LINE__);             \
       goto exit_cleanup;                                                       \
     }                                                                          \
   } while (0)
