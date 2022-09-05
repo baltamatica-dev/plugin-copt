@@ -154,8 +154,8 @@ void COPTMEX_errorMsg(int errcode, const char *errinfo) {
 /* Convert CSC matrix to COO matrix */
 void COPTMEX_csc2coo(bxArray *q, int *qMatRow, int *qMatCol, double *qMatElem) {
   int ncol = bxGetN(q);
-  mwIndex *jc = bxGetJc(q);
-  mwIndex *ir = bxGetIr(q);
+  baIndex *jc = bxGetJc(q);
+  baIndex *ir = bxGetIr(q);
   double *val = bxGetDoubles(q);
 
   for (int i = 0; i < ncol; ++i) {
@@ -174,8 +174,8 @@ void COPTMEX_csc2coo(bxArray *q, int *qMatRow, int *qMatCol, double *qMatElem) {
 /* Convert COO matrix to CSC matrix */
 int COPTMEX_coo2csc(int nQElem, int *qMatRow, int *qMatCol, double *qMatElem, bxArray *q) {
   int ncol = bxGetN(q);
-  mwIndex *jc = bxGetJc(q);
-  mwIndex *ir = bxGetIr(q);
+  baIndex *jc = bxGetJc(q);
+  baIndex *ir = bxGetIr(q);
   double *val = bxGetDoubles(q);
 
   int *colMatCnt = (int *) bxCalloc(ncol, sizeof(int));
@@ -781,8 +781,8 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files,
                    cprob.colMatIdx, cprob.colMatElem, cprob.nElem, NULL));
     }
     
-    mwIndex *colMatBeg_data = bxGetJc(mprob.A);
-    mwIndex *colMatIdx_data = bxGetIr(mprob.A);
+    baIndex *colMatBeg_data = bxGetJc(mprob.A);
+    baIndex *colMatIdx_data = bxGetIr(mprob.A);
 
     for (int i = 0; i < cprob.nCol + 1; ++i) {
       colMatBeg_data[i] = cprob.colMatBeg[i];
@@ -982,8 +982,8 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files,
       *bxGetDoubles(binVar) = binColIdx + 1;
       *bxGetDoubles(binVal) = binColVal;
 
-      mwIndex *jc_data = bxGetJc(indicA);
-      mwIndex *ir_data = bxGetIr(indicA);
+      baIndex *jc_data = bxGetJc(indicA);
+      baIndex *ir_data = bxGetIr(indicA);
       double *val_data = bxGetDoubles(indicA);
 
       jc_data[0] = 0;
@@ -1125,8 +1125,8 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files,
         qMatCol_data[i] = qMatCol[i];
       }
 
-      mwIndex *jc_data = bxGetJc(QcLinear);
-      mwIndex *ir_data = bxGetIr(QcLinear);
+      baIndex *jc_data = bxGetJc(QcLinear);
+      baIndex *ir_data = bxGetIr(QcLinear);
 
       jc_data[0] = 0;
       jc_data[1] = nQRowElem;
@@ -1540,8 +1540,8 @@ int COPTMEX_solveConeModel(copt_prob *prob, const bxArray *in_model, bxArray **o
       goto exit_cleanup;
     }
 
-    mwIndex *colMatBeg_data = bxGetJc(mconeprob.A);
-    mwIndex *colMatIdx_data = bxGetIr(mconeprob.A);
+    baIndex *colMatBeg_data = bxGetJc(mconeprob.A);
+    baIndex *colMatIdx_data = bxGetIr(mconeprob.A);
     for (int i = 0; i < cconeprob.nCol + 1; ++i) {
       cconeprob.colMatBeg[i] = (int) colMatBeg_data[i];
     }
@@ -1744,8 +1744,8 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
       goto exit_cleanup;
     }
 
-    mwIndex *colMatBeg_data = bxGetJc(mprob.A);
-    mwIndex *colMatIdx_data = bxGetIr(mprob.A);
+    baIndex *colMatBeg_data = bxGetJc(mprob.A);
+    baIndex *colMatIdx_data = bxGetIr(mprob.A);
     for (int i = 0; i < cprob.nCol + 1; ++i) {
       cprob.colMatBeg[i] = (int) colMatBeg_data[i];
     }
@@ -1897,7 +1897,7 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
         }
-        mwIndex *rowMatIdx_data = bxGetIr(indicA);
+        baIndex *rowMatIdx_data = bxGetIr(indicA);
         for (int i = 0; i < nRowMatCnt; ++i) {
           rowMatIdx[i] = rowMatIdx_data[i];
         }
@@ -2052,7 +2052,7 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
               retcode = COPT_RETCODE_MEMORY;
               goto exit_cleanup;
             }
-            mwIndex *qRowMatIdx_data = bxGetIr(QcLinear);
+            baIndex *qRowMatIdx_data = bxGetIr(QcLinear);
             for (int i = 0, iElem = 0; i < bxGetNzmax(QcLinear); ++i) {
               if (qRowMatElem_data[i] != 0.0) {
                 qRowMatIdx[iElem] = (int) qRowMatIdx_data[i];
@@ -2158,7 +2158,7 @@ int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
-      mwIndex *rowIdx_data = bxGetIr(mprob.mipstart);
+      baIndex *rowIdx_data = bxGetIr(mprob.mipstart);
       for (int i = 0; i < nRowCnt; ++i) {
         rowIdx[i] = rowIdx_data[i];
       }
