@@ -1,6 +1,7 @@
 #ifndef __COPTMEX_H__
 #define __COPTMEX_H__
 
+#include <cstdint>
 #include "copt.h"
 #include "coptbex.hpp"
 
