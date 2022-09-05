@@ -2,14 +2,16 @@
 #pragma once
 #include <iostream>
 #include <cassert>
+#include <cmath>
 #include <bex/bex.hpp>
 
 
 #define BUILD_WITH_BEX_WARPPER
+#define bxLogical   bool
 
 #define bxFree      free
 #define bxCalloc    calloc
-#define bxIsNaN     isnan
+#define bxIsNaN     std::isnan
 
 
 /* workaround */
