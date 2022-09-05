@@ -1,6 +1,6 @@
 #include "coptmex.h"
 
-void COPT_CALL COPTMEX_printLog(char* msg, void* userdata) {
+static void COPT_CALL COPTMEX_printLog(char* msg, void* userdata) {
   if (msg != NULL) {
     bxPrintf("%s\n", msg);
     mexEvalString("drawnow;");
