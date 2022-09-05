@@ -4,6 +4,7 @@
 #include <cassert>
 #include <bex/bex.hpp>
 
+
 #define BUILD_WITH_BEX_WARPPER
 
 #define bxFree      free
@@ -13,6 +14,8 @@
 
 /* workaround */
 
+extern void mexErrMsgIdAndTxt(const char *errorid, const char *errormsg, ...);
+extern const char* bxGetFieldNameByNumber(const bxArray *pm, int fieldnumber);
 extern int bxGetNumberOfElements(const bxArray *pm);
 extern int bxAddField(bxArray *pm, const char *fieldname);
 extern bool bxIsScalar(const bxArray*);

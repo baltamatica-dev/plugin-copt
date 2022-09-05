@@ -1,8 +1,27 @@
 /* SPDX-License-Identifier:  */
-#include "coptbex.hpp"
+#include "coptmex.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdbool.h>
 
 
 /* workaround */
+
+void mexErrMsgIdAndTxt(const char *errorid, const char *errormsg, ...) {
+    va_list ap;
+    
+    va_start(ap, errormsg);
+    bxPrintf(errormsg, ap);
+    va_end(ap);
+    
+    bxErrMsgTxt(errorid);
+}
+
+extern const char* INTPARAM_field_names[];
+const char* bxGetFieldNameByNumber(const bxArray *pm, int fieldnumber) {
+    return INTPARAM_field_names[fieldnumber];
+}
+
 /**
  * @brief 返回数组中的元素个数.
  * 
@@ -99,3 +118,43 @@ bexfun_info_t * bxPluginFunctions() {
     assert((TOTAL_PLUGIN_FUNCTIONS == i));
     return func_list_dyn;
 } /* bxPluginFunctions */
+
+
+
+const char* INTPARAM_field_names[] = {
+    COPT_INTPARAM_LOGGING,
+    COPT_INTPARAM_LOGTOCONSOLE,
+    COPT_INTPARAM_PRESOLVE,
+    COPT_INTPARAM_SCALING,
+    COPT_INTPARAM_DUALIZE,
+    COPT_INTPARAM_LPMETHOD,
+    COPT_INTPARAM_REQFARKASRAY,
+    COPT_INTPARAM_DUALPRICE,
+    COPT_INTPARAM_DUALPERTURB,
+    COPT_INTPARAM_CUTLEVEL,
+    COPT_INTPARAM_ROOTCUTLEVEL,
+    COPT_INTPARAM_TREECUTLEVEL,
+    COPT_INTPARAM_ROOTCUTROUNDS,
+    COPT_INTPARAM_NODECUTROUNDS,
+    COPT_INTPARAM_HEURLEVEL,
+    COPT_INTPARAM_ROUNDINGHEURLEVEL,
+    COPT_INTPARAM_DIVINGHEURLEVEL,
+    COPT_INTPARAM_SUBMIPHEURLEVEL,
+    COPT_INTPARAM_STRONGBRANCHING,
+    COPT_INTPARAM_CONFLICTANALYSIS,
+    COPT_INTPARAM_NODELIMIT,
+    COPT_INTPARAM_MIPTASKS,
+    COPT_INTPARAM_BARHOMOGENEOUS,
+    COPT_INTPARAM_BARORDER,
+    COPT_INTPARAM_BARITERLIMIT,
+    COPT_INTPARAM_THREADS,
+    COPT_INTPARAM_BARTHREADS,
+    COPT_INTPARAM_SIMPLEXTHREADS,
+    COPT_INTPARAM_CROSSOVERTHREADS,
+    COPT_INTPARAM_CROSSOVER,
+    COPT_INTPARAM_SDPMETHOD,
+    COPT_INTPARAM_IISMETHOD,
+    COPT_INTPARAM_FEASRELAXMODE,
+    COPT_INTPARAM_MIPSTARTMODE,
+    COPT_INTPARAM_MIPSTARTNODELIMIT
+};
