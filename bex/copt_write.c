@@ -1,6 +1,6 @@
 #include "coptmex.h"
 
-void mexFunction(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
+void copt_write(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
   int retcode = COPT_RETCODE_OK;
   copt_env *env = NULL;
   copt_prob *prob = NULL;

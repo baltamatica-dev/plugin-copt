@@ -7,7 +7,7 @@ void COPT_CALL COPTMEX_printLog(char *msg, void *userdata) {
   }
 }
 
-void mexFunction(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
+void copt_computeiis(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
   int retcode = COPT_RETCODE_OK;
   copt_env *env = NULL;
   copt_prob *prob = NULL;
