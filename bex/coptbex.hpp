@@ -13,7 +13,7 @@
 
 /* workaround */
 
-extern size_t bxGetNumberOfElements(const bxArray *pm);
+extern int bxGetNumberOfElements(const bxArray *pm);
 extern int bxAddField(bxArray *pm, const char *fieldname);
 extern bool bxIsScalar(const bxArray*);
 extern double bxGetScalar(const bxArray*);

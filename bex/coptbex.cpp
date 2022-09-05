@@ -8,7 +8,7 @@
  * 
  * 如数组维度为 2x5x5，则返回 30
  */
-size_t bxGetNumberOfElements(const bxArray *ba) {
+int bxGetNumberOfElements(const bxArray *ba) {
     // need mxGetDimensions, mxGetNumberOfDimensions
     return bxGetM(ba) * bxGetN(ba);
 }
