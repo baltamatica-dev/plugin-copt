@@ -1,5 +1,9 @@
 #include "coptmex.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int COPT_SearchParamAttr(copt_prob *prob, const char *name, int *p_type);
 
 extern int COPT_GetPSDSolution(copt_prob* prob,
@@ -47,6 +51,11 @@ extern int COPT_LoadConeProb(copt_prob* prob,
   char const* const* rowNames,
   char const* const* psdColNames,
   int* outRowMap);
+
+#ifdef __cplusplus
+}
+#endif // of __cplusplus
+
 
 /* Convert status code from integer to string */
 static const char *COPTMEX_statusInt2Str(int status) {
