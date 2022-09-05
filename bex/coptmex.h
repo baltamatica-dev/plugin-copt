@@ -2,7 +2,7 @@
 #define __COPTMEX_H__
 
 #include "copt.h"
-#include "mex.h"
+#include "coptbex.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
