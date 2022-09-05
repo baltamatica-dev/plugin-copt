@@ -93,17 +93,17 @@ static const char *COPTMEX_objsenInt2Str(int objsen) {
 }
 
 /* Extract string from MEX */
-static int COPTMEX_getString(const mxArray *in_array, char **out_str) {
+static int COPTMEX_getString(const bxArray *in_array, char **out_str) {
   int retcode = 0;
 
-  int bufflen = mxGetNumberOfElements(in_array) + 1;
-  char *buffer = (char *) mxCalloc(bufflen, sizeof(char));
+  int bufflen = bxGetNumberOfElements(in_array) + 1;
+  char *buffer = (char *) bxCalloc(bufflen, sizeof(char));
   if (!buffer) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
   
-  mxGetString(in_array, buffer, bufflen);
+  bxGetString(in_array, buffer, bufflen);
   *out_str = buffer;
 
 exit_cleanup:
@@ -113,7 +113,7 @@ exit_cleanup:
 /* Free string allocated by MEX */
 static void COPTMEX_freeString(char **in_str) {
   if (in_str != NULL && *in_str != NULL) {
-    mxFree(*in_str);
+    bxFree(*in_str);
   }
   return;
 }
@@ -152,11 +152,11 @@ void COPTMEX_errorMsg(int errcode, const char *errinfo) {
 }
 
 /* Convert CSC matrix to COO matrix */
-void COPTMEX_csc2coo(mxArray *q, int *qMatRow, int *qMatCol, double *qMatElem) {
-  int ncol = mxGetN(q);
-  mwIndex *jc = mxGetJc(q);
-  mwIndex *ir = mxGetIr(q);
-  double *val = mxGetDoubles(q);
+void COPTMEX_csc2coo(bxArray *q, int *qMatRow, int *qMatCol, double *qMatElem) {
+  int ncol = bxGetN(q);
+  mwIndex *jc = bxGetJc(q);
+  mwIndex *ir = bxGetIr(q);
+  double *val = bxGetDoubles(q);
 
   for (int i = 0; i < ncol; ++i) {
     int nColElem = (int) jc[i];
@@ -172,13 +172,13 @@ void COPTMEX_csc2coo(mxArray *q, int *qMatRow, int *qMatCol, double *qMatElem) {
 }
 
 /* Convert COO matrix to CSC matrix */
-int COPTMEX_coo2csc(int nQElem, int *qMatRow, int *qMatCol, double *qMatElem, mxArray *q) {
-  int ncol = mxGetN(q);
-  mwIndex *jc = mxGetJc(q);
-  mwIndex *ir = mxGetIr(q);
-  double *val = mxGetDoubles(q);
+int COPTMEX_coo2csc(int nQElem, int *qMatRow, int *qMatCol, double *qMatElem, bxArray *q) {
+  int ncol = bxGetN(q);
+  mwIndex *jc = bxGetJc(q);
+  mwIndex *ir = bxGetIr(q);
+  double *val = bxGetDoubles(q);
 
-  int *colMatCnt = (int *) mxCalloc(ncol, sizeof(int));
+  int *colMatCnt = (int *) bxCalloc(ncol, sizeof(int));
   if (!colMatCnt) {
     return COPT_RETCODE_MEMORY;
   }
@@ -208,7 +208,7 @@ int COPTMEX_coo2csc(int nQElem, int *qMatRow, int *qMatCol, double *qMatElem, mx
     last = tmp;
   }
 
-  mxFree(colMatCnt);
+  bxFree(colMatCnt);
   return COPT_RETCODE_OK;
 }
 
@@ -227,40 +227,40 @@ exit_cleanup:
 }
 
 /* Extract version of COPT */
-int COPTMEX_getVersion(mxArray **out_version) {
+int COPTMEX_getVersion(bxArray **out_version) {
   int retcode = COPT_RETCODE_OK;
-  mxArray *retver = NULL;
+  bxArray *retver = NULL;
   coptmex_mversion coptver;
 
   COPTMEX_initVersion(&coptver);
 
-  coptver.major = mxCreateDoubleMatrix(1, 1, mxREAL);
-  coptver.minor = mxCreateDoubleMatrix(1, 1, mxREAL);
-  coptver.technical = mxCreateDoubleMatrix(1, 1, mxREAL);
+  coptver.major = bxCreateDoubleMatrix(1, 1, bxREAL);
+  coptver.minor = bxCreateDoubleMatrix(1, 1, bxREAL);
+  coptver.technical = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!coptver.major || !coptver.minor || !coptver.technical) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
-  *mxGetDoubles(coptver.major) = COPT_VERSION_MAJOR;
-  *mxGetDoubles(coptver.minor) = COPT_VERSION_MINOR;
-  *mxGetDoubles(coptver.technical) = COPT_VERSION_TECHNICAL;
+  *bxGetDoubles(coptver.major) = COPT_VERSION_MAJOR;
+  *bxGetDoubles(coptver.minor) = COPT_VERSION_MINOR;
+  *bxGetDoubles(coptver.technical) = COPT_VERSION_TECHNICAL;
 
-  retver = mxCreateStructMatrix(1, 1, 0, NULL);
+  retver = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!retver) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'major'
-  mxAddField(retver, COPTMEX_VERSION_MAJOR);
-  mxSetField(retver, 0, COPTMEX_VERSION_MAJOR, coptver.major);
+  bxAddField(retver, COPTMEX_VERSION_MAJOR);
+  bxSetField(retver, 0, COPTMEX_VERSION_MAJOR, coptver.major);
   // 'minor'
-  mxAddField(retver, COPTMEX_VERSION_MINOR);
-  mxSetField(retver, 0, COPTMEX_VERSION_MINOR, coptver.minor);
+  bxAddField(retver, COPTMEX_VERSION_MINOR);
+  bxSetField(retver, 0, COPTMEX_VERSION_MINOR, coptver.minor);
   // 'technical'
-  mxAddField(retver, COPTMEX_VERSION_TECHNICAL);
-  mxSetField(retver, 0, COPTMEX_VERSION_TECHNICAL, coptver.technical);
+  bxAddField(retver, COPTMEX_VERSION_TECHNICAL);
+  bxSetField(retver, 0, COPTMEX_VERSION_TECHNICAL, coptver.technical);
 
   *out_version = retver;
 
@@ -273,7 +273,7 @@ exit_cleanup:
 }
 
 /* Extract objective sense */
-int COPTMEX_getObjsen(const mxArray *in_objsen, int *out_objsen) {
+int COPTMEX_getObjsen(const bxArray *in_objsen, int *out_objsen) {
   int retcode = COPT_RETCODE_OK;
   char *objsen = NULL;
 
@@ -286,9 +286,9 @@ exit_cleanup:
 }
 
 /* Extract LP solution */
-static int COPTMEX_getLpResult(copt_prob *prob, mxArray **out_lpresult) {
+static int COPTMEX_getLpResult(copt_prob *prob, bxArray **out_lpresult) {
   int retcode = COPT_RETCODE_OK;
-  mxArray *lpResult = NULL;
+  bxArray *lpResult = NULL;
   coptmex_clpsol csol;
   coptmex_mlpsol msol;
 
@@ -305,63 +305,63 @@ static int COPTMEX_getLpResult(copt_prob *prob, mxArray **out_lpresult) {
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_HASBASIS, &csol.hasBasis));
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_HASLPSOL, &csol.hasLpSol));
 
-  msol.status      = mxCreateString(COPTMEX_statusInt2Str(csol.nStatus));
-  msol.simplexiter = mxCreateDoubleMatrix(1, 1, mxREAL);
-  msol.barrieriter = mxCreateDoubleMatrix(1, 1, mxREAL);
-  msol.solvingtime = mxCreateDoubleMatrix(1, 1, mxREAL);
+  msol.status      = bxCreateString(COPTMEX_statusInt2Str(csol.nStatus));
+  msol.simplexiter = bxCreateDoubleMatrix(1, 1, bxREAL);
+  msol.barrieriter = bxCreateDoubleMatrix(1, 1, bxREAL);
+  msol.solvingtime = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!msol.status || !msol.simplexiter || !msol.barrieriter || !msol.solvingtime) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   if (csol.hasLpSol) {
-    msol.objval  = mxCreateDoubleMatrix(1, 1, mxREAL);
-    msol.value   = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
-    msol.redcost = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
-    msol.slack   = mxCreateDoubleMatrix(csol.nRow, 1, mxREAL);
-    msol.dual    = mxCreateDoubleMatrix(csol.nRow, 1, mxREAL);
+    msol.objval  = bxCreateDoubleMatrix(1, 1, bxREAL);
+    msol.value   = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
+    msol.redcost = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
+    msol.slack   = bxCreateDoubleMatrix(csol.nRow, 1, bxREAL);
+    msol.dual    = bxCreateDoubleMatrix(csol.nRow, 1, bxREAL);
     if (!msol.objval || !msol.value || !msol.redcost || !msol.slack || !msol.dual) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    csol.colValue = mxGetDoubles(msol.value);
-    csol.colDual  = mxGetDoubles(msol.redcost);
-    csol.rowSlack = mxGetDoubles(msol.slack);
-    csol.rowDual  = mxGetDoubles(msol.dual);
+    csol.colValue = bxGetDoubles(msol.value);
+    csol.colDual  = bxGetDoubles(msol.redcost);
+    csol.rowSlack = bxGetDoubles(msol.slack);
+    csol.rowDual  = bxGetDoubles(msol.dual);
 
     if (csol.nQConstr > 0) {
-      msol.qcslack = mxCreateDoubleMatrix(csol.nQConstr, 1, mxREAL);
+      msol.qcslack = bxCreateDoubleMatrix(csol.nQConstr, 1, bxREAL);
       if (!msol.qcslack) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      csol.qRowSlack = mxGetDoubles(msol.qcslack);
+      csol.qRowSlack = bxGetDoubles(msol.qcslack);
     }
 
     if (csol.nPSD > 0) {
-      msol.psdcolvalue = mxCreateDoubleMatrix(csol.nPSDLen, 1, mxREAL);
-      msol.psdcoldual = mxCreateDoubleMatrix(csol.nPSDLen, 1, mxREAL);
+      msol.psdcolvalue = bxCreateDoubleMatrix(csol.nPSDLen, 1, bxREAL);
+      msol.psdcoldual = bxCreateDoubleMatrix(csol.nPSDLen, 1, bxREAL);
       if (!msol.psdcolvalue || !msol.psdcoldual) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      csol.psdColValue = mxGetDoubles(msol.psdcolvalue);
-      csol.psdColDual = mxGetDoubles(msol.psdcoldual);
+      csol.psdColValue = bxGetDoubles(msol.psdcolvalue);
+      csol.psdColDual = bxGetDoubles(msol.psdcoldual);
     }
 
     if (csol.nPSDConstr > 0) {
-      msol.psdrowslack = mxCreateDoubleMatrix(csol.nPSDConstr, 1, mxREAL);
-      msol.psdrowdual = mxCreateDoubleMatrix(csol.nPSDConstr, 1, mxREAL);
+      msol.psdrowslack = bxCreateDoubleMatrix(csol.nPSDConstr, 1, bxREAL);
+      msol.psdrowdual = bxCreateDoubleMatrix(csol.nPSDConstr, 1, bxREAL);
       if (!msol.psdrowslack || !msol.psdrowdual) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      csol.psdRowSlack = mxGetDoubles(msol.psdrowslack);
-      csol.psdRowDual = mxGetDoubles(msol.psdrowdual);
+      csol.psdRowSlack = bxGetDoubles(msol.psdrowslack);
+      csol.psdRowDual = bxGetDoubles(msol.psdrowdual);
     }
   }
 
@@ -372,35 +372,35 @@ static int COPTMEX_getLpResult(copt_prob *prob, mxArray **out_lpresult) {
 
     if (iReqFarkasRay) {
       if (csol.nStatus == COPT_LPSTATUS_INFEASIBLE) {
-        msol.farkas = mxCreateDoubleMatrix(csol.nRow, 1, mxREAL);
+        msol.farkas = bxCreateDoubleMatrix(csol.nRow, 1, bxREAL);
         if (!msol.farkas) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
         }
-        csol.dualFarkas = mxGetDoubles(msol.farkas);
+        csol.dualFarkas = bxGetDoubles(msol.farkas);
       }
 
       if (csol.nStatus == COPT_LPSTATUS_UNBOUNDED) {
-        msol.ray = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
+        msol.ray = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
         if (!msol.ray) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
         }
-        csol.primalRay = mxGetDoubles(msol.ray);
+        csol.primalRay = bxGetDoubles(msol.ray);
       }
     }
   }
 
   if (csol.hasBasis) {
-    msol.varbasis    = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
-    msol.constrbasis = mxCreateDoubleMatrix(csol.nRow, 1, mxREAL);
+    msol.varbasis    = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
+    msol.constrbasis = bxCreateDoubleMatrix(csol.nRow, 1, bxREAL);
     if (!msol.varbasis || !msol.constrbasis) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    csol.colBasis = (int *) mxCalloc(csol.nCol, sizeof(int));
-    csol.rowBasis = (int *) mxCalloc(csol.nRow, sizeof(int));
+    csol.colBasis = (int *) bxCalloc(csol.nCol, sizeof(int));
+    csol.rowBasis = (int *) bxCalloc(csol.nRow, sizeof(int));
     if (!csol.colBasis || !csol.rowBasis) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -441,17 +441,17 @@ static int COPTMEX_getLpResult(copt_prob *prob, mxArray **out_lpresult) {
     COPTMEX_CALL(COPT_GetBasis(prob, csol.colBasis, csol.rowBasis));
   }
 
-  *mxGetDoubles(msol.simplexiter) = csol.nSimplexIter;
-  *mxGetDoubles(msol.barrieriter) = csol.nBarrierIter;
-  *mxGetDoubles(msol.solvingtime) = csol.dSolvingTime;
+  *bxGetDoubles(msol.simplexiter) = csol.nSimplexIter;
+  *bxGetDoubles(msol.barrieriter) = csol.nBarrierIter;
+  *bxGetDoubles(msol.solvingtime) = csol.dSolvingTime;
 
   if (csol.hasLpSol) {
-    *mxGetDoubles(msol.objval) = csol.dObjVal;
+    *bxGetDoubles(msol.objval) = csol.dObjVal;
   }
 
   if (csol.hasBasis) {
-    double *colBasis_data = mxGetDoubles(msol.varbasis);
-    double *rowBasis_data = mxGetDoubles(msol.constrbasis);
+    double *colBasis_data = bxGetDoubles(msol.varbasis);
+    double *rowBasis_data = bxGetDoubles(msol.constrbasis);
     for (int i = 0; i < csol.nCol; ++i) {
       colBasis_data[i] = csol.colBasis[i];
     }
@@ -459,92 +459,92 @@ static int COPTMEX_getLpResult(copt_prob *prob, mxArray **out_lpresult) {
       rowBasis_data[i] = csol.rowBasis[i];
     }
 
-    mxFree(csol.colBasis);
-    mxFree(csol.rowBasis);
+    bxFree(csol.colBasis);
+    bxFree(csol.rowBasis);
   }
 
-  lpResult = mxCreateStructMatrix(1, 1, 0, NULL);
+  lpResult = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!lpResult) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'status'
-  mxAddField(lpResult, COPTMEX_RESULT_STATUS);
-  mxSetField(lpResult, 0, COPTMEX_RESULT_STATUS, msol.status);
+  bxAddField(lpResult, COPTMEX_RESULT_STATUS);
+  bxSetField(lpResult, 0, COPTMEX_RESULT_STATUS, msol.status);
   // 'simplexiter'
-  mxAddField(lpResult, COPTMEX_RESULT_SIMITER);
-  mxSetField(lpResult, 0, COPTMEX_RESULT_SIMITER, msol.simplexiter);
+  bxAddField(lpResult, COPTMEX_RESULT_SIMITER);
+  bxSetField(lpResult, 0, COPTMEX_RESULT_SIMITER, msol.simplexiter);
   // 'barrieriter'
-  mxAddField(lpResult, COPTMEX_RESULT_BARITER);
-  mxSetField(lpResult, 0, COPTMEX_RESULT_BARITER, msol.barrieriter);
+  bxAddField(lpResult, COPTMEX_RESULT_BARITER);
+  bxSetField(lpResult, 0, COPTMEX_RESULT_BARITER, msol.barrieriter);
   // 'solvingtime'
-  mxAddField(lpResult, COPTMEX_RESULT_SOLVETIME);
-  mxSetField(lpResult, 0, COPTMEX_RESULT_SOLVETIME, msol.solvingtime);
+  bxAddField(lpResult, COPTMEX_RESULT_SOLVETIME);
+  bxSetField(lpResult, 0, COPTMEX_RESULT_SOLVETIME, msol.solvingtime);
 
   if (csol.hasLpSol) {
     // 'objval'
-    mxAddField(lpResult, COPTMEX_RESULT_OBJVAL);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_OBJVAL, msol.objval);
+    bxAddField(lpResult, COPTMEX_RESULT_OBJVAL);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_OBJVAL, msol.objval);
     // 'x'
-    mxAddField(lpResult, COPTMEX_RESULT_VALUE);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_VALUE, msol.value);
+    bxAddField(lpResult, COPTMEX_RESULT_VALUE);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_VALUE, msol.value);
     // 'rc'
-    mxAddField(lpResult, COPTMEX_RESULT_REDCOST);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_REDCOST, msol.redcost);
+    bxAddField(lpResult, COPTMEX_RESULT_REDCOST);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_REDCOST, msol.redcost);
     // 'slack;
-    mxAddField(lpResult, COPTMEX_RESULT_SLACK);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_SLACK, msol.slack);
+    bxAddField(lpResult, COPTMEX_RESULT_SLACK);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_SLACK, msol.slack);
     // 'pi'
-    mxAddField(lpResult, COPTMEX_RESULT_DUAL);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_DUAL, msol.dual);
+    bxAddField(lpResult, COPTMEX_RESULT_DUAL);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_DUAL, msol.dual);
 
     // 'qcslack'
     if (csol.nQConstr > 0) {
-      mxAddField(lpResult, COPTMEX_RESULT_QCSLACK);
-      mxSetField(lpResult, 0, COPTMEX_RESULT_QCSLACK, msol.qcslack);
+      bxAddField(lpResult, COPTMEX_RESULT_QCSLACK);
+      bxSetField(lpResult, 0, COPTMEX_RESULT_QCSLACK, msol.qcslack);
     }
 
     if (csol.nPSD > 0) {
       // 'psdx'
-      mxAddField(lpResult, COPTMEX_RESULT_PSDX);
-      mxSetField(lpResult, 0, COPTMEX_RESULT_PSDX, msol.psdcolvalue);
+      bxAddField(lpResult, COPTMEX_RESULT_PSDX);
+      bxSetField(lpResult, 0, COPTMEX_RESULT_PSDX, msol.psdcolvalue);
 
       // 'psdrc'
-      mxAddField(lpResult, COPTMEX_RESULT_PSDRC);
-      mxSetField(lpResult, 0, COPTMEX_RESULT_PSDRC, msol.psdcoldual);
+      bxAddField(lpResult, COPTMEX_RESULT_PSDRC);
+      bxSetField(lpResult, 0, COPTMEX_RESULT_PSDRC, msol.psdcoldual);
     }
 
     if (csol.nPSDConstr > 0) {
       // 'psdslack'
-      mxAddField(lpResult, COPTMEX_RESULT_PSDSLACK);
-      mxSetField(lpResult, 0, COPTMEX_RESULT_PSDSLACK, msol.psdrowslack);
+      bxAddField(lpResult, COPTMEX_RESULT_PSDSLACK);
+      bxSetField(lpResult, 0, COPTMEX_RESULT_PSDSLACK, msol.psdrowslack);
 
       // 'psdpi'
-      mxAddField(lpResult, COPTMEX_RESULT_PSDPI);
-      mxSetField(lpResult, 0, COPTMEX_RESULT_PSDPI, msol.psdrowdual);
+      bxAddField(lpResult, COPTMEX_RESULT_PSDPI);
+      bxSetField(lpResult, 0, COPTMEX_RESULT_PSDPI, msol.psdrowdual);
     }
   }
 
   if (msol.farkas != NULL) {
     // 'dualfarkas'
-    mxAddField(lpResult, COPTMEX_RESULT_DUALFARKAS);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_DUALFARKAS, msol.farkas);
+    bxAddField(lpResult, COPTMEX_RESULT_DUALFARKAS);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_DUALFARKAS, msol.farkas);
   }
 
   if (msol.ray != NULL) {
     // 'primalray'
-    mxAddField(lpResult, COPTMEX_RESULT_PRIMALRAY);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_PRIMALRAY, msol.ray);
+    bxAddField(lpResult, COPTMEX_RESULT_PRIMALRAY);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_PRIMALRAY, msol.ray);
   }
 
   if (csol.hasBasis) {
     // 'varbasis'
-    mxAddField(lpResult, COPTMEX_RESULT_VARBASIS);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_VARBASIS, msol.varbasis);
+    bxAddField(lpResult, COPTMEX_RESULT_VARBASIS);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_VARBASIS, msol.varbasis);
     // 'constrbasis'
-    mxAddField(lpResult, COPTMEX_RESULT_CONBASIS);
-    mxSetField(lpResult, 0, COPTMEX_RESULT_CONBASIS, msol.constrbasis);
+    bxAddField(lpResult, COPTMEX_RESULT_CONBASIS);
+    bxSetField(lpResult, 0, COPTMEX_RESULT_CONBASIS, msol.constrbasis);
   }
 
   *out_lpresult = lpResult;
@@ -558,9 +558,9 @@ exit_cleanup:
 }
 
 /* Extract MIP solution */
-static int COPTMEX_getMipResult(copt_prob *prob, mxArray **out_mipresult) {
+static int COPTMEX_getMipResult(copt_prob *prob, bxArray **out_mipresult) {
   int retcode = COPT_RETCODE_OK;
-  mxArray *mipResult = NULL;
+  bxArray *mipResult = NULL;
   coptmex_cmipsol csol;
   coptmex_mmipsol msol;
 
@@ -573,26 +573,26 @@ static int COPTMEX_getMipResult(copt_prob *prob, mxArray **out_mipresult) {
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_POOLSOLS, &csol.nSolPool));
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_MIPSTATUS, &csol.nStatus));
 
-  msol.status      = mxCreateString(COPTMEX_statusInt2Str(csol.nStatus));
-  msol.simplexiter = mxCreateDoubleMatrix(1, 1, mxREAL);
-  msol.nodecnt     = mxCreateDoubleMatrix(1, 1, mxREAL);
-  msol.solvingtime = mxCreateDoubleMatrix(1, 1, mxREAL);
+  msol.status      = bxCreateString(COPTMEX_statusInt2Str(csol.nStatus));
+  msol.simplexiter = bxCreateDoubleMatrix(1, 1, bxREAL);
+  msol.nodecnt     = bxCreateDoubleMatrix(1, 1, bxREAL);
+  msol.solvingtime = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!msol.status || !msol.simplexiter || !msol.nodecnt || !msol.solvingtime) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   if (csol.hasMipSol) {
-    msol.bestgap = mxCreateDoubleMatrix(1, 1, mxREAL);
-    msol.objval  = mxCreateDoubleMatrix(1, 1, mxREAL);
-    msol.bestbnd = mxCreateDoubleMatrix(1, 1, mxREAL);
-    msol.value   = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
+    msol.bestgap = bxCreateDoubleMatrix(1, 1, bxREAL);
+    msol.objval  = bxCreateDoubleMatrix(1, 1, bxREAL);
+    msol.bestbnd = bxCreateDoubleMatrix(1, 1, bxREAL);
+    msol.value   = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
     if (!msol.bestgap || !msol.objval || !msol.bestbnd || !msol.value) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    csol.colValue = mxGetDoubles(msol.value);
+    csol.colValue = bxGetDoubles(msol.value);
   }
 
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_SIMPLEXITER, &csol.nSimplexIter));
@@ -609,81 +609,81 @@ static int COPTMEX_getMipResult(copt_prob *prob, mxArray **out_mipresult) {
   if (csol.nSolPool > 0) {
     const char *solpoolfields[] = {COPTMEX_RESULT_POOLOBJ,
                                    COPTMEX_RESULT_POOLXN};
-    msol.solpool = mxCreateStructMatrix(csol.nSolPool, 1, 2, solpoolfields);
+    msol.solpool = bxCreateStructMatrix(csol.nSolPool, 1, 2, solpoolfields);
     if (!msol.solpool) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
     for (int i = 0; i < csol.nSolPool; ++i) {
-      mxArray *poolobjval = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *poolxn = mxCreateDoubleMatrix(csol.nCol, 1, mxREAL);
+      bxArray *poolobjval = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *poolxn = bxCreateDoubleMatrix(csol.nCol, 1, bxREAL);
       if (!poolobjval || !poolxn) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
       double dPoolObjVal = +COPT_INFINITY;
-      double *dPoolColValue = mxGetDoubles(poolxn);
+      double *dPoolColValue = bxGetDoubles(poolxn);
 
       COPTMEX_CALL(COPT_GetPoolObjVal(prob, i, &dPoolObjVal));
       COPTMEX_CALL(COPT_GetPoolSolution(prob, i, csol.nCol, NULL, dPoolColValue));
 
-      *mxGetDoubles(poolobjval) = dPoolObjVal;
+      *bxGetDoubles(poolobjval) = dPoolObjVal;
 
-      mxSetField(msol.solpool, i, COPTMEX_RESULT_POOLOBJ, poolobjval);
-      mxSetField(msol.solpool, i, COPTMEX_RESULT_POOLXN, poolxn);
+      bxSetField(msol.solpool, i, COPTMEX_RESULT_POOLOBJ, poolobjval);
+      bxSetField(msol.solpool, i, COPTMEX_RESULT_POOLXN, poolxn);
     }
   }
 
-  *mxGetDoubles(msol.simplexiter) = csol.nSimplexIter;
-  *mxGetDoubles(msol.nodecnt)     = csol.nNodeCnt;
-  *mxGetDoubles(msol.solvingtime) = csol.dSolvingTime;
+  *bxGetDoubles(msol.simplexiter) = csol.nSimplexIter;
+  *bxGetDoubles(msol.nodecnt)     = csol.nNodeCnt;
+  *bxGetDoubles(msol.solvingtime) = csol.dSolvingTime;
 
   if (csol.hasMipSol) {
-    *mxGetDoubles(msol.bestgap) = csol.dBestGap;
-    *mxGetDoubles(msol.objval)  = csol.dObjVal; 
-    *mxGetDoubles(msol.bestbnd) = csol.dBestBnd;
+    *bxGetDoubles(msol.bestgap) = csol.dBestGap;
+    *bxGetDoubles(msol.objval)  = csol.dObjVal; 
+    *bxGetDoubles(msol.bestbnd) = csol.dBestBnd;
   }
 
-  mipResult = mxCreateStructMatrix(1, 1, 0, NULL);
+  mipResult = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!mipResult) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'status'
-  mxAddField(mipResult, COPTMEX_RESULT_STATUS);
-  mxSetField(mipResult, 0, COPTMEX_RESULT_STATUS, msol.status);
+  bxAddField(mipResult, COPTMEX_RESULT_STATUS);
+  bxSetField(mipResult, 0, COPTMEX_RESULT_STATUS, msol.status);
   // 'simplexiter'
-  mxAddField(mipResult, COPTMEX_RESULT_SIMITER);
-  mxSetField(mipResult, 0, COPTMEX_RESULT_SIMITER, msol.simplexiter);
+  bxAddField(mipResult, COPTMEX_RESULT_SIMITER);
+  bxSetField(mipResult, 0, COPTMEX_RESULT_SIMITER, msol.simplexiter);
   // 'nodecnt'
-  mxAddField(mipResult, COPTMEX_RESULT_NODECNT);
-  mxSetField(mipResult, 0, COPTMEX_RESULT_NODECNT, msol.nodecnt);
+  bxAddField(mipResult, COPTMEX_RESULT_NODECNT);
+  bxSetField(mipResult, 0, COPTMEX_RESULT_NODECNT, msol.nodecnt);
   // 'solvingtime'
-  mxAddField(mipResult, COPTMEX_RESULT_SOLVETIME);
-  mxSetField(mipResult, 0, COPTMEX_RESULT_SOLVETIME, msol.solvingtime);
+  bxAddField(mipResult, COPTMEX_RESULT_SOLVETIME);
+  bxSetField(mipResult, 0, COPTMEX_RESULT_SOLVETIME, msol.solvingtime);
 
   if (csol.hasMipSol) {
     // 'bestgap'
-    mxAddField(mipResult, COPTMEX_RESULT_BESTGAP);
-    mxSetField(mipResult, 0, COPTMEX_RESULT_BESTGAP, msol.bestgap);
+    bxAddField(mipResult, COPTMEX_RESULT_BESTGAP);
+    bxSetField(mipResult, 0, COPTMEX_RESULT_BESTGAP, msol.bestgap);
     // 'objval'
-    mxAddField(mipResult, COPTMEX_RESULT_OBJVAL);
-    mxSetField(mipResult, 0, COPTMEX_RESULT_OBJVAL, msol.objval);
+    bxAddField(mipResult, COPTMEX_RESULT_OBJVAL);
+    bxSetField(mipResult, 0, COPTMEX_RESULT_OBJVAL, msol.objval);
     // 'bestbnd'
-    mxAddField(mipResult, COPTMEX_RESULT_BESTBND);
-    mxSetField(mipResult, 0, COPTMEX_RESULT_BESTBND, msol.bestbnd);
+    bxAddField(mipResult, COPTMEX_RESULT_BESTBND);
+    bxSetField(mipResult, 0, COPTMEX_RESULT_BESTBND, msol.bestbnd);
     // 'x'
-    mxAddField(mipResult, COPTMEX_RESULT_VALUE);
-    mxSetField(mipResult, 0, COPTMEX_RESULT_VALUE, msol.value);
+    bxAddField(mipResult, COPTMEX_RESULT_VALUE);
+    bxSetField(mipResult, 0, COPTMEX_RESULT_VALUE, msol.value);
   }
 
   if (csol.nSolPool > 0) {
     // 'pool'
-    mxAddField(mipResult, COPTMEX_RESULT_POOL);
-    mxSetField(mipResult, 0, COPTMEX_RESULT_POOL, msol.solpool);
+    bxAddField(mipResult, COPTMEX_RESULT_POOL);
+    bxSetField(mipResult, 0, COPTMEX_RESULT_POOL, msol.solpool);
   }
 
   *out_mipresult = mipResult;
@@ -697,7 +697,7 @@ exit_cleanup:
 }
 
 /* Extract and save result */
-int COPTMEX_getResult(copt_prob *prob, mxArray **out_result) {
+int COPTMEX_getResult(copt_prob *prob, bxArray **out_result) {
   int retcode = 0;
   int isMip = 0;
 
@@ -713,11 +713,11 @@ exit_cleanup:
 }
 
 /* Extract model data */
-int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
-                     mxArray **out_model) {
+int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files,
+                     bxArray **out_model) {
   int retcode = COPT_RETCODE_OK;
   int hasInfoFile = 0;
-  mxArray *retmodel = NULL;
+  bxArray *retmodel = NULL;
   coptmex_cprob cprob;
   coptmex_mprob mprob;
 
@@ -744,15 +744,15 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_OBJSENSE, &cprob.nObjSen));
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_HASBASIS, &cprob.hasBasis));
 
-  mprob.objsen = mxCreateString(COPTMEX_objsenInt2Str(cprob.nObjSen));
-  mprob.objcon = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mprob.objsen = bxCreateString(COPTMEX_objsenInt2Str(cprob.nObjSen));
+  mprob.objcon = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!mprob.objsen || !mprob.objcon) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   COPTMEX_CALL(COPT_GetDblAttr(prob, COPT_DBLATTR_OBJCONST, &cprob.dObjConst));
-  *mxGetDoubles(mprob.objcon) = cprob.dObjConst;
+  *bxGetDoubles(mprob.objcon) = cprob.dObjConst;
 
   if (cprob.nRow > 0 && cprob.nCol > 0) {
     int nRealElem = 0;
@@ -762,27 +762,27 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       nRealElem = cprob.nElem;
     }
     
-    mprob.A = mxCreateSparse(cprob.nRow, cprob.nCol, nRealElem, mxREAL);
+    mprob.A = bxCreateSparse(cprob.nRow, cprob.nCol, nRealElem, bxREAL);
     if (!mprob.A) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    cprob.colMatBeg = (int *) mxCalloc(cprob.nCol + 1, sizeof(int));
-    cprob.colMatIdx = (int *) mxCalloc(nRealElem, sizeof(int));
+    cprob.colMatBeg = (int *) bxCalloc(cprob.nCol + 1, sizeof(int));
+    cprob.colMatIdx = (int *) bxCalloc(nRealElem, sizeof(int));
     if (!cprob.colMatBeg || !cprob.colMatIdx) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
-    cprob.colMatElem = mxGetDoubles(mprob.A);
+    cprob.colMatElem = bxGetDoubles(mprob.A);
 
     if (cprob.nElem > 0) {
       COPTMEX_CALL(COPT_GetCols(prob, cprob.nCol, NULL, cprob.colMatBeg, NULL,
                    cprob.colMatIdx, cprob.colMatElem, cprob.nElem, NULL));
     }
     
-    mwIndex *colMatBeg_data = mxGetJc(mprob.A);
-    mwIndex *colMatIdx_data = mxGetIr(mprob.A);
+    mwIndex *colMatBeg_data = bxGetJc(mprob.A);
+    mwIndex *colMatIdx_data = bxGetIr(mprob.A);
 
     for (int i = 0; i < cprob.nCol + 1; ++i) {
       colMatBeg_data[i] = cprob.colMatBeg[i];
@@ -791,30 +791,30 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       colMatIdx_data[i] = cprob.colMatIdx[i];
     }
 
-    mxFree(cprob.colMatBeg);
-    mxFree(cprob.colMatIdx);
+    bxFree(cprob.colMatBeg);
+    bxFree(cprob.colMatIdx);
   }
 
   if (cprob.nCol > 0) {
-    mprob.obj = mxCreateDoubleMatrix(cprob.nCol, 1, mxREAL);
-    mprob.lb  = mxCreateDoubleMatrix(cprob.nCol, 1, mxREAL);
-    mprob.ub  = mxCreateDoubleMatrix(cprob.nCol, 1, mxREAL);
-    mprob.varnames = mxCreateCellMatrix(cprob.nCol, 1);
+    mprob.obj = bxCreateDoubleMatrix(cprob.nCol, 1, bxREAL);
+    mprob.lb  = bxCreateDoubleMatrix(cprob.nCol, 1, bxREAL);
+    mprob.ub  = bxCreateDoubleMatrix(cprob.nCol, 1, bxREAL);
+    mprob.varnames = bxCreateCellMatrix(cprob.nCol, 1);
     if (!mprob.obj || !mprob.lb || !mprob.ub || !mprob.varnames) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    cprob.colCost  = mxGetDoubles(mprob.obj);
-    cprob.colLower = mxGetDoubles(mprob.lb);
-    cprob.colUpper = mxGetDoubles(mprob.ub);
+    cprob.colCost  = bxGetDoubles(mprob.obj);
+    cprob.colLower = bxGetDoubles(mprob.lb);
+    cprob.colUpper = bxGetDoubles(mprob.ub);
 
     COPTMEX_CALL(COPT_GetColInfo(prob, COPT_DBLINFO_OBJ, cprob.nCol, NULL, cprob.colCost));
     COPTMEX_CALL(COPT_GetColInfo(prob, COPT_DBLINFO_LB, cprob.nCol, NULL, cprob.colLower));
     COPTMEX_CALL(COPT_GetColInfo(prob, COPT_DBLINFO_UB, cprob.nCol, NULL, cprob.colUpper));
 
-    char *colType_c  = (char *) mxCalloc(2 * cprob.nCol, sizeof(char));
-    char **colType_s = (char **) mxCalloc(cprob.nCol, sizeof(char *));
+    char *colType_c  = (char *) bxCalloc(2 * cprob.nCol, sizeof(char));
+    char **colType_s = (char **) bxCalloc(cprob.nCol, sizeof(char *));
     if (!colType_c || !colType_s) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -831,10 +831,10 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       colType_s[i] = colType_c + 2 * i;
     }
 
-    mprob.vtype = mxCreateCharMatrixFromStrings(cprob.nCol, (const char **) colType_s);
+    mprob.vtype = bxCreateCharMatrixFromStrings(cprob.nCol, (const char **) colType_s);
 
     int colNameLen = 0;
-    char **colNames = (char **) mxCalloc(cprob.nCol, sizeof(char *));
+    char **colNames = (char **) bxCalloc(cprob.nCol, sizeof(char *));
     if (!colNames) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -842,35 +842,35 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
 
     for (int i = 0; i < cprob.nCol; ++i) {
       COPTMEX_CALL(COPT_GetColName(prob, i, NULL, 0, &colNameLen));
-      colNames[i] = (char *) mxCalloc(colNameLen, sizeof(char));
+      colNames[i] = (char *) bxCalloc(colNameLen, sizeof(char));
       if (!colNames[i]) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
       COPTMEX_CALL(COPT_GetColName(prob, i, colNames[i], colNameLen, NULL));
 
-      mxSetCell(mprob.varnames, i, mxCreateString(colNames[i]));
+      bxSetCell(mprob.varnames, i, bxCreateString(colNames[i]));
     }
   }
 
   if (cprob.nRow > 0) {
-    mprob.lhs = mxCreateDoubleMatrix(cprob.nRow, 1, mxREAL);
-    mprob.rhs = mxCreateDoubleMatrix(cprob.nRow, 1, mxREAL);
-    mprob.constrnames = mxCreateCellMatrix(cprob.nRow, 1);
+    mprob.lhs = bxCreateDoubleMatrix(cprob.nRow, 1, bxREAL);
+    mprob.rhs = bxCreateDoubleMatrix(cprob.nRow, 1, bxREAL);
+    mprob.constrnames = bxCreateCellMatrix(cprob.nRow, 1);
     if (!mprob.lhs || !mprob.rhs || !mprob.constrnames) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    cprob.rowLower = mxGetDoubles(mprob.lhs);
-    cprob.rowUpper = mxGetDoubles(mprob.rhs);
+    cprob.rowLower = bxGetDoubles(mprob.lhs);
+    cprob.rowUpper = bxGetDoubles(mprob.rhs);
 
     COPTMEX_CALL(COPT_GetRowInfo(prob, COPT_DBLINFO_LB, cprob.nRow, NULL, cprob.rowLower));
     COPTMEX_CALL(COPT_GetRowInfo(prob, COPT_DBLINFO_UB, cprob.nRow, NULL, cprob.rowUpper));
     
     int rowNameLen = 0;
     //TODO: rowSense
-    char **rowNames = (char **) mxCalloc(cprob.nRow, sizeof(char *));
+    char **rowNames = (char **) bxCalloc(cprob.nRow, sizeof(char *));
     if (!rowNames) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -878,14 +878,14 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
 
     for (int i = 0; i < cprob.nRow; ++i) {
       COPTMEX_CALL(COPT_GetRowName(prob, i, NULL, 0, &rowNameLen));
-      rowNames[i] = (char *) mxCalloc(rowNameLen, sizeof(char));
+      rowNames[i] = (char *) bxCalloc(rowNameLen, sizeof(char));
       if (!rowNames[i]) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
       COPTMEX_CALL(COPT_GetRowName(prob, i, rowNames[i], rowNameLen, NULL));
 
-      mxSetCell(mprob.constrnames, i, mxCreateString(rowNames[i]));
+      bxSetCell(mprob.constrnames, i, bxCreateString(rowNames[i]));
     }
   }
 
@@ -893,7 +893,7 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
     const char *sosfields[] = {COPTMEX_MODEL_SOSTYPE,
                                COPTMEX_MODEL_SOSVARS,
                                COPTMEX_MODEL_SOSWEIGHT};
-    mprob.sos = mxCreateStructMatrix(cprob.nSos, 1, 3, sosfields);
+    mprob.sos = bxCreateStructMatrix(cprob.nSos, 1, 3, sosfields);
     if (!mprob.sos) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -902,11 +902,11 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
     COPTMEX_CALL(COPT_GetSOSs(prob, cprob.nSos, NULL, NULL, NULL, NULL, NULL,
                  NULL, 0, &cprob.nSosSize));
     
-    cprob.sosType   = (int *) mxCalloc(cprob.nSos, sizeof(int));
-    cprob.sosMatBeg = (int *) mxCalloc(cprob.nSos, sizeof(int));
-    cprob.sosMatCnt = (int *) mxCalloc(cprob.nSos, sizeof(int));
-    cprob.sosMatIdx = (int *) mxCalloc(cprob.nSosSize, sizeof(int));
-    cprob.sosMatWt  = (double *) mxCalloc(cprob.nSosSize, sizeof(double));
+    cprob.sosType   = (int *) bxCalloc(cprob.nSos, sizeof(int));
+    cprob.sosMatBeg = (int *) bxCalloc(cprob.nSos, sizeof(int));
+    cprob.sosMatCnt = (int *) bxCalloc(cprob.nSos, sizeof(int));
+    cprob.sosMatIdx = (int *) bxCalloc(cprob.nSosSize, sizeof(int));
+    cprob.sosMatWt  = (double *) bxCalloc(cprob.nSosSize, sizeof(double));
     if (!cprob.sosType || !cprob.sosMatBeg || !cprob.sosMatCnt ||
         !cprob.sosMatIdx || !cprob.sosMatWt) {
       retcode = COPT_RETCODE_MEMORY;
@@ -918,29 +918,29 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
                  cprob.sosMatWt, cprob.nSosSize, NULL));
     
     for (int i = 0; i < cprob.nSos; ++i) {
-      mxArray *sosType = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *sosIdx  = mxCreateDoubleMatrix(cprob.sosMatCnt[i], 1, mxREAL);
-      mxArray *sosWts  = mxCreateDoubleMatrix(cprob.sosMatCnt[i], 1, mxREAL);
+      bxArray *sosType = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *sosIdx  = bxCreateDoubleMatrix(cprob.sosMatCnt[i], 1, bxREAL);
+      bxArray *sosWts  = bxCreateDoubleMatrix(cprob.sosMatCnt[i], 1, bxREAL);
       if (!sosType || !sosIdx || !sosWts) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      *mxGetDoubles(sosType) = cprob.sosType[i];
+      *bxGetDoubles(sosType) = cprob.sosType[i];
 
       int iSosElem = cprob.sosMatBeg[i];
       int iSosLast = cprob.sosMatCnt[i] + iSosElem;
-      double *sosIdx_data = mxGetDoubles(sosIdx);
-      double *sosWts_data = mxGetDoubles(sosWts);
+      double *sosIdx_data = bxGetDoubles(sosIdx);
+      double *sosWts_data = bxGetDoubles(sosWts);
       for (int iElem = 0; iElem < cprob.sosMatCnt[i]; ++iElem) {
         sosIdx_data[iElem] = cprob.sosMatIdx[iSosElem] + 1;
         sosWts_data[iElem] = cprob.sosMatWt[iSosElem];
         iSosElem++;
       }
 
-      mxSetField(mprob.sos, i, COPTMEX_MODEL_SOSTYPE, sosType);
-      mxSetField(mprob.sos, i, COPTMEX_MODEL_SOSVARS, sosIdx);
-      mxSetField(mprob.sos, i, COPTMEX_MODEL_SOSWEIGHT, sosWts);
+      bxSetField(mprob.sos, i, COPTMEX_MODEL_SOSTYPE, sosType);
+      bxSetField(mprob.sos, i, COPTMEX_MODEL_SOSVARS, sosIdx);
+      bxSetField(mprob.sos, i, COPTMEX_MODEL_SOSWEIGHT, sosWts);
     }
   }
 
@@ -950,7 +950,7 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
                                  COPTMEX_MODEL_INDICROW,
                                  COPTMEX_MODEL_INDICSENSE,
                                  COPTMEX_MODEL_INDICRHS};
-    mprob.indicator = mxCreateStructMatrix(cprob.nIndicator, 1, 5, indicfields);
+    mprob.indicator = bxCreateStructMatrix(cprob.nIndicator, 1, 5, indicfields);
     if (!mprob.indicator) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -961,17 +961,17 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       COPTMEX_CALL(COPT_GetIndicator(prob, i, NULL, NULL, NULL, NULL, NULL, 
                    NULL, NULL, 0, &rowElemCnt));
 
-      mxArray *binVar = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *binVal = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *indicA = mxCreateSparse(cprob.nCol, 1, rowElemCnt, mxREAL);
-      mxArray *indicSense = NULL;
-      mxArray *indicRhs = mxCreateDoubleMatrix(1, 1, mxREAL);
+      bxArray *binVar = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *binVal = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *indicA = bxCreateSparse(cprob.nCol, 1, rowElemCnt, bxREAL);
+      bxArray *indicSense = NULL;
+      bxArray *indicRhs = bxCreateDoubleMatrix(1, 1, bxREAL);
 
       int binColIdx = 0;
       int binColVal = 0;
       int nRowMatCnt = 0;
-      int *rowMatIdx = (int *) mxCalloc(rowElemCnt, sizeof(int));
-      double *rowMatElem = (double *) mxCalloc(rowElemCnt, sizeof(double));
+      int *rowMatIdx = (int *) bxCalloc(rowElemCnt, sizeof(int));
+      double *rowMatElem = (double *) bxCalloc(rowElemCnt, sizeof(double));
       char cRowSense[2] = {0};
       double dRowBound = 0;
 
@@ -979,12 +979,12 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
                    &nRowMatCnt, rowMatIdx, rowMatElem, &cRowSense[0],
                    &dRowBound, rowElemCnt, NULL));
 
-      *mxGetDoubles(binVar) = binColIdx + 1;
-      *mxGetDoubles(binVal) = binColVal;
+      *bxGetDoubles(binVar) = binColIdx + 1;
+      *bxGetDoubles(binVal) = binColVal;
 
-      mwIndex *jc_data = mxGetJc(indicA);
-      mwIndex *ir_data = mxGetIr(indicA);
-      double *val_data = mxGetDoubles(indicA);
+      mwIndex *jc_data = bxGetJc(indicA);
+      mwIndex *ir_data = bxGetIr(indicA);
+      double *val_data = bxGetDoubles(indicA);
 
       jc_data[0] = 0;
       jc_data[1] = rowElemCnt;
@@ -993,24 +993,24 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
         val_data[i] = rowMatElem[i];
       }
 
-      indicSense = mxCreateString(cRowSense);
-      *mxGetDoubles(indicRhs) = dRowBound;
+      indicSense = bxCreateString(cRowSense);
+      *bxGetDoubles(indicRhs) = dRowBound;
 
-      mxFree(rowMatIdx);
-      mxFree(rowMatElem);
+      bxFree(rowMatIdx);
+      bxFree(rowMatElem);
 
-      mxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAR, binVar);
-      mxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAL, binVal);
-      mxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICROW, indicA);
-      mxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICSENSE, indicSense);
-      mxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICRHS, indicRhs);
+      bxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAR, binVar);
+      bxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAL, binVal);
+      bxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICROW, indicA);
+      bxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICSENSE, indicSense);
+      bxSetField(mprob.indicator, i, COPTMEX_MODEL_INDICRHS, indicRhs);
     }
   }
 
   if (cprob.nCone > 0) {
     const char *conefields[] = {COPTMEX_MODEL_CONETYPE,
                                 COPTMEX_MODEL_CONEVARS};
-    mprob.cone = mxCreateStructMatrix(cprob.nCone, 1, 2, conefields);
+    mprob.cone = bxCreateStructMatrix(cprob.nCone, 1, 2, conefields);
     if (!mprob.cone) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1019,10 +1019,10 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
     COPTMEX_CALL(COPT_GetCones(prob, cprob.nCone, NULL, NULL, NULL, NULL, NULL, 
                  0, &cprob.nConeSize));
 
-    cprob.coneType = (int *) mxCalloc(cprob.nCone, sizeof(int));
-    cprob.coneBeg  = (int *) mxCalloc(cprob.nCone, sizeof(int));
-    cprob.coneCnt  = (int *) mxCalloc(cprob.nCone, sizeof(int));
-    cprob.coneIdx  = (int *) mxCalloc(cprob.nConeSize, sizeof(int));
+    cprob.coneType = (int *) bxCalloc(cprob.nCone, sizeof(int));
+    cprob.coneBeg  = (int *) bxCalloc(cprob.nCone, sizeof(int));
+    cprob.coneCnt  = (int *) bxCalloc(cprob.nCone, sizeof(int));
+    cprob.coneIdx  = (int *) bxCalloc(cprob.nConeSize, sizeof(int));
     if (!cprob.coneType || !cprob.coneBeg || !cprob.coneCnt || !cprob.coneIdx) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1033,38 +1033,38 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
                  NULL));
 
     for (int i = 0; i < cprob.nCone; ++i) {
-      mxArray *coneType = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *coneIdx = mxCreateDoubleMatrix(cprob.coneCnt[i], 1, mxREAL);
+      bxArray *coneType = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *coneIdx = bxCreateDoubleMatrix(cprob.coneCnt[i], 1, bxREAL);
       if (!coneType || !coneIdx) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      *mxGetDoubles(coneType) = cprob.coneType[i];
+      *bxGetDoubles(coneType) = cprob.coneType[i];
 
       int iConeElem = cprob.coneBeg[i];
       int iConeLast = cprob.coneCnt[i] + iConeElem;
-      double *coneIdx_data = mxGetDoubles(coneIdx);
+      double *coneIdx_data = bxGetDoubles(coneIdx);
       for (int iElem = 0; iElem < cprob.coneCnt[i]; ++iElem) {
         coneIdx_data[iElem] = cprob.coneIdx[iConeElem] + 1;
         iConeElem++;
       }
 
-      mxSetField(mprob.cone, i, COPTMEX_MODEL_CONETYPE, coneType);
-      mxSetField(mprob.cone, i, COPTMEX_MODEL_CONEVARS, coneIdx);
+      bxSetField(mprob.cone, i, COPTMEX_MODEL_CONETYPE, coneType);
+      bxSetField(mprob.cone, i, COPTMEX_MODEL_CONEVARS, coneIdx);
     }
   }
 
   if (cprob.nQElem > 0) {
-    mprob.qobj = mxCreateSparse(cprob.nCol, cprob.nCol, cprob.nQElem, mxREAL);
+    mprob.qobj = bxCreateSparse(cprob.nCol, cprob.nCol, cprob.nQElem, bxREAL);
     if (!mprob.qobj) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    int *qObjRow = (int *) mxCalloc(cprob.nQElem, sizeof(int));
-    int *qObjCol = (int *) mxCalloc(cprob.nQElem, sizeof(int));
-    double *qObjElem = (double *) mxCalloc(cprob.nQElem, sizeof(double));
+    int *qObjRow = (int *) bxCalloc(cprob.nQElem, sizeof(int));
+    int *qObjCol = (int *) bxCalloc(cprob.nQElem, sizeof(int));
+    double *qObjElem = (double *) bxCalloc(cprob.nQElem, sizeof(double));
     if (!qObjRow || !qObjCol || !qObjElem) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1073,9 +1073,9 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
     COPTMEX_CALL(COPT_GetQuadObj(prob, NULL, qObjRow, qObjCol, qObjElem));
     COPTMEX_CALL(COPTMEX_coo2csc(cprob.nQElem, qObjRow, qObjCol, qObjElem, mprob.qobj));
 
-    mxFree(qObjRow);
-    mxFree(qObjCol);
-    mxFree(qObjElem);
+    bxFree(qObjRow);
+    bxFree(qObjCol);
+    bxFree(qObjElem);
   }
 
   if (cprob.nQConstr > 0) {
@@ -1086,7 +1086,7 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
                                    COPTMEX_MODEL_QCSENSE,
                                    COPTMEX_MODEL_QCRHS,
                                    COPTMEX_MODEL_QCNAME};
-    mprob.quadcon = mxCreateStructMatrix(cprob.nQConstr, 1, 7, qconstrfields);
+    mprob.quadcon = bxCreateStructMatrix(cprob.nQConstr, 1, 7, qconstrfields);
     if (!mprob.quadcon) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1098,19 +1098,19 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       COPTMEX_CALL(COPT_GetQConstr(prob, i, NULL, NULL, NULL, 0, &nQMatElem, NULL,
                    NULL, NULL, NULL, 0, &nQRowElem));
 
-      mxArray *QcRow = mxCreateDoubleMatrix(nQMatElem, 1, mxREAL);
-      mxArray *QcCol = mxCreateDoubleMatrix(nQMatElem, 1, mxREAL);
-      mxArray *QcVal = mxCreateDoubleMatrix(nQMatElem, 1, mxREAL);
-      mxArray *QcLinear = mxCreateSparse(cprob.nCol, 1, nQRowElem, mxREAL);
-      mxArray *QcSense = NULL;
-      mxArray *QcRhs = mxCreateDoubleMatrix(1, 1, mxREAL);
-      mxArray *QcName = NULL;
+      bxArray *QcRow = bxCreateDoubleMatrix(nQMatElem, 1, bxREAL);
+      bxArray *QcCol = bxCreateDoubleMatrix(nQMatElem, 1, bxREAL);
+      bxArray *QcVal = bxCreateDoubleMatrix(nQMatElem, 1, bxREAL);
+      bxArray *QcLinear = bxCreateSparse(cprob.nCol, 1, nQRowElem, bxREAL);
+      bxArray *QcSense = NULL;
+      bxArray *QcRhs = bxCreateDoubleMatrix(1, 1, bxREAL);
+      bxArray *QcName = NULL;
 
-      int *qMatRow = (int *) mxCalloc(nQMatElem, sizeof(int));
-      int *qMatCol = (int *) mxCalloc(nQMatElem, sizeof(int));
-      double *qMatElem = mxGetDoubles(QcVal);
-      int *qRowMatIdx = (int *) mxCalloc(nQRowElem, sizeof(int));
-      double *qRowMatElem = mxGetDoubles(QcLinear);
+      int *qMatRow = (int *) bxCalloc(nQMatElem, sizeof(int));
+      int *qMatCol = (int *) bxCalloc(nQMatElem, sizeof(int));
+      double *qMatElem = bxGetDoubles(QcVal);
+      int *qRowMatIdx = (int *) bxCalloc(nQRowElem, sizeof(int));
+      double *qRowMatElem = bxGetDoubles(QcLinear);
       char qRowSense[2];
       double qRowBound = 0.0;
       char *qRowName = NULL;
@@ -1118,15 +1118,15 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       COPTMEX_CALL(COPT_GetQConstr(prob, i, qMatRow, qMatCol, qMatElem, nQMatElem, NULL,
                    qRowMatIdx, qRowMatElem, qRowSense, &qRowBound, nQRowElem, NULL));
 
-      double *qMatRow_data = mxGetDoubles(QcRow);
-      double *qMatCol_data = mxGetDoubles(QcCol);
+      double *qMatRow_data = bxGetDoubles(QcRow);
+      double *qMatCol_data = bxGetDoubles(QcCol);
       for (int i = 0; i < nQMatElem; ++i) {
         qMatRow_data[i] = qMatRow[i];
         qMatCol_data[i] = qMatCol[i];
       }
 
-      mwIndex *jc_data = mxGetJc(QcLinear);
-      mwIndex *ir_data = mxGetIr(QcLinear);
+      mwIndex *jc_data = bxGetJc(QcLinear);
+      mwIndex *ir_data = bxGetIr(QcLinear);
 
       jc_data[0] = 0;
       jc_data[1] = nQRowElem;
@@ -1134,46 +1134,46 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
         ir_data[i] = qRowMatIdx[i];
       }
 
-      QcSense = mxCreateString(qRowSense);
-      *mxGetDoubles(QcRhs) = qRowBound;
+      QcSense = bxCreateString(qRowSense);
+      *bxGetDoubles(QcRhs) = qRowBound;
 
       int nQcNameSize = 0;
       COPTMEX_CALL(COPT_GetQConstrName(prob, i, NULL, 0, &nQcNameSize));
 
-      qRowName = (char *) mxCalloc(nQcNameSize + 1, sizeof(char));
+      qRowName = (char *) bxCalloc(nQcNameSize + 1, sizeof(char));
       if (!qRowName) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
       COPTMEX_CALL(COPT_GetQConstrName(prob, i, qRowName, nQcNameSize, NULL));
-      QcName = mxCreateString(qRowName);
+      QcName = bxCreateString(qRowName);
 
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCROW, QcRow);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCCOL, QcCol);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCVAL, QcVal);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCLINEAR, QcLinear);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCSENSE, QcSense);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCRHS, QcRhs);
-      mxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCNAME, QcName);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCROW, QcRow);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCCOL, QcCol);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCVAL, QcVal);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCLINEAR, QcLinear);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCSENSE, QcSense);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCRHS, QcRhs);
+      bxSetField(mprob.quadcon, i, COPTMEX_MODEL_QCNAME, QcName);
 
-      mxFree(qMatRow);
-      mxFree(qMatCol);
-      mxFree(qRowMatIdx);
-      mxFree(qRowName);
+      bxFree(qMatRow);
+      bxFree(qMatCol);
+      bxFree(qRowMatIdx);
+      bxFree(qRowName);
     }
   }
 
   if (hasInfoFile && cprob.hasBasis) {
-    mprob.varbasis = mxCreateDoubleMatrix(cprob.nCol, 1, mxREAL);
-    mprob.constrbasis = mxCreateDoubleMatrix(cprob.nRow, 1, mxREAL);
+    mprob.varbasis = bxCreateDoubleMatrix(cprob.nCol, 1, bxREAL);
+    mprob.constrbasis = bxCreateDoubleMatrix(cprob.nRow, 1, bxREAL);
     if (!mprob.varbasis || !mprob.constrbasis) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    cprob.colBasis = (int *) mxCalloc(cprob.nCol, sizeof(int));
-    cprob.rowBasis = (int *) mxCalloc(cprob.nRow, sizeof(int));
+    cprob.colBasis = (int *) bxCalloc(cprob.nCol, sizeof(int));
+    cprob.rowBasis = (int *) bxCalloc(cprob.nRow, sizeof(int));
     if (!cprob.colBasis || !cprob.rowBasis) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1182,8 +1182,8 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
     COPTMEX_CALL(COPT_GetColBasis(prob, cprob.nCol, NULL, cprob.colBasis));
     COPTMEX_CALL(COPT_GetRowBasis(prob, cprob.nRow, NULL, cprob.rowBasis));
 
-    double *colBasis_data = mxGetDoubles(mprob.varbasis);
-    double *rowBasis_data = mxGetDoubles(mprob.constrbasis);
+    double *colBasis_data = bxGetDoubles(mprob.varbasis);
+    double *rowBasis_data = bxGetDoubles(mprob.constrbasis);
     for (int i = 0; i < cprob.nCol; ++i) {
       colBasis_data[i] = cprob.colBasis[i];
     }
@@ -1191,97 +1191,97 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files,
       rowBasis_data[i] = cprob.rowBasis[i];
     }
 
-    mxFree(cprob.colBasis);
-    mxFree(cprob.rowBasis);
+    bxFree(cprob.colBasis);
+    bxFree(cprob.rowBasis);
   }
 
-  retmodel = mxCreateStructMatrix(1, 1, 0, NULL);
+  retmodel = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!retmodel) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'objsen'
-  mxAddField(retmodel, COPTMEX_MODEL_OBJSEN);
-  mxSetField(retmodel, 0, COPTMEX_MODEL_OBJSEN, mprob.objsen);
+  bxAddField(retmodel, COPTMEX_MODEL_OBJSEN);
+  bxSetField(retmodel, 0, COPTMEX_MODEL_OBJSEN, mprob.objsen);
   // 'objcon'
-  mxAddField(retmodel, COPTMEX_MODEL_OBJCON);
-  mxSetField(retmodel, 0, COPTMEX_MODEL_OBJCON, mprob.objcon);
+  bxAddField(retmodel, COPTMEX_MODEL_OBJCON);
+  bxSetField(retmodel, 0, COPTMEX_MODEL_OBJCON, mprob.objcon);
 
   if (mprob.A != NULL) {
     // 'A'
-    mxAddField(retmodel, COPTMEX_MODEL_A);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_A, mprob.A);
+    bxAddField(retmodel, COPTMEX_MODEL_A);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_A, mprob.A);
   }
 
   if (cprob.nCol > 0) {
     // 'obj'
-    mxAddField(retmodel, COPTMEX_MODEL_OBJ);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_OBJ, mprob.obj);
+    bxAddField(retmodel, COPTMEX_MODEL_OBJ);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_OBJ, mprob.obj);
     // 'lb'
-    mxAddField(retmodel, COPTMEX_MODEL_LB);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_LB, mprob.lb);
+    bxAddField(retmodel, COPTMEX_MODEL_LB);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_LB, mprob.lb);
     // 'ub'
-    mxAddField(retmodel, COPTMEX_MODEL_UB);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_UB, mprob.ub);
+    bxAddField(retmodel, COPTMEX_MODEL_UB);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_UB, mprob.ub);
     // 'vtype'
-    mxAddField(retmodel, COPTMEX_MODEL_VTYPE);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_VTYPE, mprob.vtype);
+    bxAddField(retmodel, COPTMEX_MODEL_VTYPE);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_VTYPE, mprob.vtype);
     // 'varnames'
-    mxAddField(retmodel, COPTMEX_MODEL_VARNAME);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_VARNAME, mprob.varnames);
+    bxAddField(retmodel, COPTMEX_MODEL_VARNAME);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_VARNAME, mprob.varnames);
   }
 
   if (cprob.nRow > 0) {
     //TODO: 'sense'
     // 'lhs'
-    mxAddField(retmodel, COPTMEX_MODEL_LHS);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_LHS, mprob.lhs);
+    bxAddField(retmodel, COPTMEX_MODEL_LHS);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_LHS, mprob.lhs);
     // 'rhs'
-    mxAddField(retmodel, COPTMEX_MODEL_RHS);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_RHS, mprob.rhs);
+    bxAddField(retmodel, COPTMEX_MODEL_RHS);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_RHS, mprob.rhs);
     // 'constrnames'
-    mxAddField(retmodel, COPTMEX_MODEL_CONNAME);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_CONNAME, mprob.constrnames);
+    bxAddField(retmodel, COPTMEX_MODEL_CONNAME);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_CONNAME, mprob.constrnames);
   }
 
   // 'sos'
   if (cprob.nSos > 0) {
-    mxAddField(retmodel, COPTMEX_MODEL_SOS);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_SOS, mprob.sos);
+    bxAddField(retmodel, COPTMEX_MODEL_SOS);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_SOS, mprob.sos);
   }
 
   // 'indicator'
   if (cprob.nIndicator > 0) {
-    mxAddField(retmodel, COPTMEX_MODEL_INDICATOR);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_INDICATOR, mprob.indicator);
+    bxAddField(retmodel, COPTMEX_MODEL_INDICATOR);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_INDICATOR, mprob.indicator);
   }
 
   // 'cone'
   if (cprob.nCone > 0) {
-    mxAddField(retmodel, COPTMEX_MODEL_CONE);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_CONE, mprob.cone);
+    bxAddField(retmodel, COPTMEX_MODEL_CONE);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_CONE, mprob.cone);
   }
 
   // 'Q'
   if (cprob.nQElem > 0) {
-    mxAddField(retmodel, COPTMEX_MODEL_QUADOBJ);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_QUADOBJ, mprob.qobj);
+    bxAddField(retmodel, COPTMEX_MODEL_QUADOBJ);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_QUADOBJ, mprob.qobj);
   }
 
   // 'quadcon'
   if (cprob.nQConstr > 0) {
-    mxAddField(retmodel, COPTMEX_MODEL_QUADCON);
-    mxSetField(retmodel, 0, COPTMEX_MODEL_QUADCON, mprob.quadcon);
+    bxAddField(retmodel, COPTMEX_MODEL_QUADCON);
+    bxSetField(retmodel, 0, COPTMEX_MODEL_QUADCON, mprob.quadcon);
   }
 
   if (hasInfoFile && cprob.hasBasis) {
     // 'varbasis'
-    mxAddField(retmodel, COPTMEX_RESULT_VARBASIS);
-    mxSetField(retmodel, 0, COPTMEX_RESULT_VARBASIS, mprob.varbasis);
+    bxAddField(retmodel, COPTMEX_RESULT_VARBASIS);
+    bxSetField(retmodel, 0, COPTMEX_RESULT_VARBASIS, mprob.varbasis);
     // 'constrbasis'
-    mxAddField(retmodel, COPTMEX_RESULT_CONBASIS);
-    mxSetField(retmodel, 0, COPTMEX_RESULT_CONBASIS, mprob.constrbasis);
+    bxAddField(retmodel, COPTMEX_RESULT_CONBASIS);
+    bxSetField(retmodel, 0, COPTMEX_RESULT_CONBASIS, mprob.constrbasis);
   }
 
   *out_model = retmodel;
@@ -1295,23 +1295,23 @@ exit_cleanup:
 }
 
 /* Load parameters to problem */
-int COPTMEX_setParam(copt_prob *prob, const mxArray *in_param) {
+int COPTMEX_setParam(copt_prob *prob, const bxArray *in_param) {
   int retcode = 0;
   char msgbuf[COPT_BUFFSIZE];
   
   int islogging = 1;
-  mxArray *logging = NULL;
-  for (int i = mxGetNumberOfFields(in_param) - 1; i >= 0; --i) {
-    const char *loggingname = mxGetFieldNameByNumber(in_param, i);
+  bxArray *logging = NULL;
+  for (int i = bxGetNumberOfFields(in_param) - 1; i >= 0; --i) {
+    const char *loggingname = bxGetFieldNameByNumber(in_param, i);
     if (mystrcmp(loggingname, COPT_INTPARAM_LOGGING) == 0) {
-      logging = mxGetField(in_param, 0, loggingname);
-      if (!mxIsScalar(logging) || mxIsChar(logging)) {
+      logging = bxGetField(in_param, 0, loggingname);
+      if (!bxIsScalar(logging) || bxIsChar(logging)) {
         snprintf(msgbuf, COPT_BUFFSIZE, "parameter.%s", COPT_INTPARAM_LOGGING);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
         goto exit_cleanup;
       }
 
-      islogging = (int) mxGetScalar(logging);
+      islogging = (int) bxGetScalar(logging);
       break;
     }
   }
@@ -1324,10 +1324,10 @@ int COPTMEX_setParam(copt_prob *prob, const mxArray *in_param) {
     COPTMEX_CALL(COPT_SetIntParam(prob, COPT_INTPARAM_LOGGING, islogging));
   }
 
-  for (int i = 0; i < mxGetNumberOfFields(in_param); ++i) {
+  for (int i = 0; i < bxGetNumberOfFields(in_param); ++i) {
     int partype = -1;
-    const char *parname = mxGetFieldNameByNumber(in_param, i);
-    mxArray *pararray = mxGetField(in_param, 0, parname);
+    const char *parname = bxGetFieldNameByNumber(in_param, i);
+    bxArray *pararray = bxGetField(in_param, 0, parname);
 
     if (mystrcmp(parname, COPT_INTPARAM_LOGGING) == 0) {
       continue;
@@ -1340,16 +1340,16 @@ int COPTMEX_setParam(copt_prob *prob, const mxArray *in_param) {
       goto exit_cleanup;
     }
     
-    if (!mxIsScalar(pararray) || mxIsChar(pararray)) {
+    if (!bxIsScalar(pararray) || bxIsChar(pararray)) {
       snprintf(msgbuf, COPT_BUFFSIZE, "parameter.%s", parname);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
 
     if (partype == 0) {
-      COPTMEX_CALL(COPT_SetDblParam(prob, parname, mxGetScalar(pararray)));
+      COPTMEX_CALL(COPT_SetDblParam(prob, parname, bxGetScalar(pararray)));
     } else if (partype == 1) {
-      COPTMEX_CALL(COPT_SetIntParam(prob, parname, (int) mxGetScalar(pararray)));
+      COPTMEX_CALL(COPT_SetIntParam(prob, parname, (int) bxGetScalar(pararray)));
     }
   }
 
@@ -1362,7 +1362,7 @@ static char *COPTMEX_getFileExt(const char *filename) {
   char *lastdot = NULL;
   int lenfile = strlen(filename);
 
-  tmpfilename = (char *) mxCalloc(lenfile + 1, sizeof(char));
+  tmpfilename = (char *) bxCalloc(lenfile + 1, sizeof(char));
   memcpy(tmpfilename, filename, lenfile + 1);
 
   lastdot = strrchr(tmpfilename, '.');
@@ -1385,7 +1385,7 @@ static char *COPTMEX_getFileExt(const char *filename) {
 }
 
 /* Read optional information from file */
-int COPTMEX_readInfo(copt_prob *prob, const mxArray *in_info) {
+int COPTMEX_readInfo(copt_prob *prob, const bxArray *in_info) {
   int retcode = 0;
   char *filename = NULL;
   char *fileext = NULL;
@@ -1405,7 +1405,7 @@ exit_cleanup:
 }
 
 /* Read model from file */
-int COPTMEX_readModel(copt_prob *prob, const mxArray *in_model) {
+int COPTMEX_readModel(copt_prob *prob, const bxArray *in_model) {
   int retcode = 0;
   char *filename = NULL;
   char *fileext = NULL;
@@ -1433,7 +1433,7 @@ exit_cleanup:
 }
 
 /* Write model to file */
-int COPTMEX_writeModel(copt_prob *prob, const mxArray *out_file) {
+int COPTMEX_writeModel(copt_prob *prob, const bxArray *out_file) {
   int retcode = 0;
   char *filename = NULL;
   char *fileext = NULL;
@@ -1459,11 +1459,11 @@ exit_cleanup:
 }
 
 /* Check if solve problem via cone data */
-int COPTMEX_isConeModel(const mxArray *in_model) {
+int COPTMEX_isConeModel(const bxArray *in_model) {
   int ifConeData = 0;
-  mxArray *conedata = NULL;
+  bxArray *conedata = NULL;
   
-  conedata = mxGetField(in_model, 0, COPTMEX_MODEL_CONEDATA);
+  conedata = bxGetField(in_model, 0, COPTMEX_MODEL_CONEDATA);
   if (conedata != NULL) {
     if (COPTMEX_checkConeModel(conedata)) {
       ifConeData = 1;
@@ -1474,32 +1474,32 @@ int COPTMEX_isConeModel(const mxArray *in_model) {
 }
 
 /* Solve cone problem with cone data */
-int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **out_result, int ifRetResult) {
+int COPTMEX_solveConeModel(copt_prob *prob, const bxArray *in_model, bxArray **out_result, int ifRetResult) {
   int retcode = 0;
   coptmex_cconeprob cconeprob;
   coptmex_mconeprob mconeprob;
-  mxArray *conedata = NULL;
+  bxArray *conedata = NULL;
   int *outRowMap = NULL;
 
   COPTMEX_initCConeProb(&cconeprob);
   COPTMEX_initMConeProb(&mconeprob);
 
-  conedata = mxGetField(in_model, 0, COPTMEX_MODEL_CONEDATA);
+  conedata = bxGetField(in_model, 0, COPTMEX_MODEL_CONEDATA);
 
-  mconeprob.c = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_C);
-  mconeprob.A = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_A);
-  mconeprob.b = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_B);
+  mconeprob.c = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_C);
+  mconeprob.A = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_A);
+  mconeprob.b = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_B);
 
-  mconeprob.K = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_K);
-  mconeprob.f = mxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_F);
-  mconeprob.l = mxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_L);
-  mconeprob.q = mxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_Q);
-  mconeprob.r = mxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_R);
-  mconeprob.s = mxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_S);
+  mconeprob.K = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_K);
+  mconeprob.f = bxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_F);
+  mconeprob.l = bxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_L);
+  mconeprob.q = bxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_Q);
+  mconeprob.r = bxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_R);
+  mconeprob.s = bxGetField(mconeprob.K, 0, COPTMEX_MODEL_CONEK_S);
 
-  mconeprob.objsen = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJSEN);
-  mconeprob.objcon = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJCON);
-  mconeprob.Q      = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_Q);
+  mconeprob.objsen = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJSEN);
+  mconeprob.objcon = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJCON);
+  mconeprob.Q      = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_Q);
 
   // 'objsen'
   if (mconeprob.objsen != NULL) {
@@ -1507,15 +1507,15 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
   }
   // 'objcon'
   if (mconeprob.objcon != NULL) {
-    cconeprob.dObjConst = mxGetScalar(mconeprob.objcon);
+    cconeprob.dObjConst = bxGetScalar(mconeprob.objcon);
   }
   // 'Q'
   if (mconeprob.Q != NULL) {
-    cconeprob.nQObjElem = mxGetNzmax(mconeprob.Q);
+    cconeprob.nQObjElem = bxGetNzmax(mconeprob.Q);
 
-    cconeprob.qObjRow = (int *) mxCalloc(cconeprob.nQObjElem, sizeof(int));
-    cconeprob.qObjCol = (int *) mxCalloc(cconeprob.nQObjElem, sizeof(int));
-    cconeprob.qObjElem = (double *) mxCalloc(cconeprob.nQObjElem, sizeof(double));
+    cconeprob.qObjRow = (int *) bxCalloc(cconeprob.nQObjElem, sizeof(int));
+    cconeprob.qObjCol = (int *) bxCalloc(cconeprob.nQObjElem, sizeof(int));
+    cconeprob.qObjElem = (double *) bxCalloc(cconeprob.nQObjElem, sizeof(double));
     if (!cconeprob.qObjRow || !cconeprob.qObjCol || !cconeprob.qObjElem) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1526,22 +1526,22 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
 
   // 'c'
   if (mconeprob.c != NULL) {
-    cconeprob.colObj = mxGetDoubles(mconeprob.c);
+    cconeprob.colObj = bxGetDoubles(mconeprob.c);
   }
   // 'A'
   if (mconeprob.A != NULL) {
-    cconeprob.nRow       = mxGetM(mconeprob.A);
-    cconeprob.nCol       = mxGetN(mconeprob.A);
-    cconeprob.nElem      = mxGetNzmax(mconeprob.A);
-    cconeprob.colMatBeg  = (int *) mxCalloc(cconeprob.nCol + 1, sizeof(int));
-    cconeprob.colMatIdx  = (int *) mxCalloc(cconeprob.nElem, sizeof(int));
+    cconeprob.nRow       = bxGetM(mconeprob.A);
+    cconeprob.nCol       = bxGetN(mconeprob.A);
+    cconeprob.nElem      = bxGetNzmax(mconeprob.A);
+    cconeprob.colMatBeg  = (int *) bxCalloc(cconeprob.nCol + 1, sizeof(int));
+    cconeprob.colMatIdx  = (int *) bxCalloc(cconeprob.nElem, sizeof(int));
     if (!cconeprob.colMatBeg || !cconeprob.colMatIdx) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    mwIndex *colMatBeg_data = mxGetJc(mconeprob.A);
-    mwIndex *colMatIdx_data = mxGetIr(mconeprob.A);
+    mwIndex *colMatBeg_data = bxGetJc(mconeprob.A);
+    mwIndex *colMatIdx_data = bxGetIr(mconeprob.A);
     for (int i = 0; i < cconeprob.nCol + 1; ++i) {
       cconeprob.colMatBeg[i] = (int) colMatBeg_data[i];
     }
@@ -1549,31 +1549,31 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
       cconeprob.colMatIdx[i] = (int) colMatIdx_data[i];
     }
 
-    cconeprob.colMatElem = mxGetDoubles(mconeprob.A);
+    cconeprob.colMatElem = bxGetDoubles(mconeprob.A);
   }
   // 'b'
   if (mconeprob.b != NULL) {
-    cconeprob.rowRhs = mxGetDoubles(mconeprob.b);
+    cconeprob.rowRhs = bxGetDoubles(mconeprob.b);
   }
 
   // 'K'
   if (mconeprob.K != NULL) {
     // 'f'
     if (mconeprob.f != NULL) {
-      cconeprob.nFree = (int) mxGetScalar(mconeprob.f);
+      cconeprob.nFree = (int) bxGetScalar(mconeprob.f);
     }
     // 'l'
     if (mconeprob.l != NULL) {
-      cconeprob.nPositive = (int) mxGetScalar(mconeprob.l);
+      cconeprob.nPositive = (int) bxGetScalar(mconeprob.l);
     }
     // 'q'
     if (mconeprob.q != NULL) {
-      int nCone = mxGetNumberOfElements(mconeprob.q);
-      double *coneDim_data = mxGetDoubles(mconeprob.q);
+      int nCone = bxGetNumberOfElements(mconeprob.q);
+      double *coneDim_data = bxGetDoubles(mconeprob.q);
 
       if (nCone > 1 || (nCone == 1 && coneDim_data[0] > 0)) {
         cconeprob.nCone = nCone;
-        cconeprob.coneDim = (int *) mxCalloc(cconeprob.nCone, sizeof(int));
+        cconeprob.coneDim = (int *) bxCalloc(cconeprob.nCone, sizeof(int));
 
         for (int i = 0; i < cconeprob.nCone; ++i) {
           cconeprob.coneDim[i] = (int) coneDim_data[i];
@@ -1582,12 +1582,12 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
     }
     // 'r'
     if (mconeprob.r != NULL) {
-      int nRotateCone = mxGetNumberOfElements(mconeprob.r);
-      double *rotateConeDim_data = mxGetDoubles(mconeprob.r);
+      int nRotateCone = bxGetNumberOfElements(mconeprob.r);
+      double *rotateConeDim_data = bxGetDoubles(mconeprob.r);
 
       if (nRotateCone > 1 || (nRotateCone == 1 && rotateConeDim_data[0] > 0)) {
         cconeprob.nRotateCone = nRotateCone;
-        cconeprob.rotateConeDim = (int *) mxCalloc(cconeprob.nRotateCone, sizeof(int));
+        cconeprob.rotateConeDim = (int *) bxCalloc(cconeprob.nRotateCone, sizeof(int));
 
         for (int i = 0; i < cconeprob.nRotateCone; ++i) {
           cconeprob.rotateConeDim[i] = (int) rotateConeDim_data[i];
@@ -1596,12 +1596,12 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
     }
     // 's'
     if (mconeprob.s != NULL) {
-      int nPSD = mxGetNumberOfElements(mconeprob.s);
-      double *psdDim_data = mxGetDoubles(mconeprob.s);
+      int nPSD = bxGetNumberOfElements(mconeprob.s);
+      double *psdDim_data = bxGetDoubles(mconeprob.s);
 
       if (nPSD > 1 || (nPSD == 1 && psdDim_data[0] > 0)) {
         cconeprob.nPSD = nPSD;
-        cconeprob.psdDim = (int *) mxCalloc(cconeprob.nPSD, sizeof(int));
+        cconeprob.psdDim = (int *) bxCalloc(cconeprob.nPSD, sizeof(int));
 
         for (int i = 0; i < cconeprob.nPSD; ++i) {
           cconeprob.psdDim[i] = (int) psdDim_data[i];
@@ -1610,7 +1610,7 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
     }
   }
 
-  outRowMap = (int *) mxCalloc(cconeprob.nRow, sizeof(int));
+  outRowMap = (int *) bxCalloc(cconeprob.nRow, sizeof(int));
   if (!outRowMap) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -1631,58 +1631,58 @@ int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **o
     COPTMEX_CALL(COPTMEX_getResult(prob, out_result));
 
     if (*out_result != NULL) {
-      mxArray *rowMap = mxCreateDoubleMatrix(cconeprob.nRow, 1, mxREAL);
+      bxArray *rowMap = bxCreateDoubleMatrix(cconeprob.nRow, 1, bxREAL);
       if (rowMap == NULL) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      double *rowMap_data = mxGetDoubles(rowMap);
+      double *rowMap_data = bxGetDoubles(rowMap);
       for (int i = 0; i < cconeprob.nRow; ++i) {
         rowMap_data[i] = outRowMap[i];
       }
 
-      mxAddField(*out_result, "rowmap");
-      mxSetField(*out_result, 0, "rowmap", rowMap);
+      bxAddField(*out_result, "rowmap");
+      bxSetField(*out_result, 0, "rowmap", rowMap);
     }
   }
 
 exit_cleanup:
   if (outRowMap != NULL) {
-    mxFree(outRowMap);
+    bxFree(outRowMap);
   }
 
   if (cconeprob.qObjRow != NULL) {
-    mxFree(cconeprob.qObjRow);
+    bxFree(cconeprob.qObjRow);
   }
   if (cconeprob.qObjCol != NULL) {
-    mxFree(cconeprob.qObjCol);
+    bxFree(cconeprob.qObjCol);
   }
   if (cconeprob.qObjElem != NULL) {
-    mxFree(cconeprob.qObjElem);
+    bxFree(cconeprob.qObjElem);
   }
 
   if (cconeprob.coneDim != NULL) {
-    mxFree(cconeprob.coneDim);
+    bxFree(cconeprob.coneDim);
   }
   if (cconeprob.rotateConeDim != NULL) {
-    mxFree(cconeprob.rotateConeDim);
+    bxFree(cconeprob.rotateConeDim);
   }
   if (cconeprob.psdDim != NULL) {
-    mxFree(cconeprob.psdDim);
+    bxFree(cconeprob.psdDim);
   }
 
   if (cconeprob.colMatBeg != NULL) {
-    mxFree(cconeprob.colMatBeg);
+    bxFree(cconeprob.colMatBeg);
   }
   if (cconeprob.colMatIdx != NULL) {
-    mxFree(cconeprob.colMatIdx);
+    bxFree(cconeprob.colMatIdx);
   }
   return retcode;
 }
 
 /* Extract and load data to problem */
-int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
+int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model) {
   int retcode = 0;
   coptmex_cprob cprob;
   coptmex_mprob mprob;
@@ -1690,35 +1690,35 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
   COPTMEX_initCProb(&cprob);
   COPTMEX_initMProb(&mprob);
 
-  mprob.objsen      = mxGetField(in_model, 0, COPTMEX_MODEL_OBJSEN);
-  mprob.objcon      = mxGetField(in_model, 0, COPTMEX_MODEL_OBJCON);
-  mprob.A           = mxGetField(in_model, 0, COPTMEX_MODEL_A);
-  mprob.obj         = mxGetField(in_model, 0, COPTMEX_MODEL_OBJ);
-  mprob.lb          = mxGetField(in_model, 0, COPTMEX_MODEL_LB);
-  mprob.ub          = mxGetField(in_model, 0, COPTMEX_MODEL_UB);
-  mprob.vtype       = mxGetField(in_model, 0, COPTMEX_MODEL_VTYPE);
-  mprob.varnames    = mxGetField(in_model, 0, COPTMEX_MODEL_VARNAME);
-  mprob.sense       = mxGetField(in_model, 0, COPTMEX_MODEL_SENSE);
-  mprob.lhs         = mxGetField(in_model, 0, COPTMEX_MODEL_LHS);
-  mprob.rhs         = mxGetField(in_model, 0, COPTMEX_MODEL_RHS);
-  mprob.constrnames = mxGetField(in_model, 0, COPTMEX_MODEL_CONNAME);
+  mprob.objsen      = bxGetField(in_model, 0, COPTMEX_MODEL_OBJSEN);
+  mprob.objcon      = bxGetField(in_model, 0, COPTMEX_MODEL_OBJCON);
+  mprob.A           = bxGetField(in_model, 0, COPTMEX_MODEL_A);
+  mprob.obj         = bxGetField(in_model, 0, COPTMEX_MODEL_OBJ);
+  mprob.lb          = bxGetField(in_model, 0, COPTMEX_MODEL_LB);
+  mprob.ub          = bxGetField(in_model, 0, COPTMEX_MODEL_UB);
+  mprob.vtype       = bxGetField(in_model, 0, COPTMEX_MODEL_VTYPE);
+  mprob.varnames    = bxGetField(in_model, 0, COPTMEX_MODEL_VARNAME);
+  mprob.sense       = bxGetField(in_model, 0, COPTMEX_MODEL_SENSE);
+  mprob.lhs         = bxGetField(in_model, 0, COPTMEX_MODEL_LHS);
+  mprob.rhs         = bxGetField(in_model, 0, COPTMEX_MODEL_RHS);
+  mprob.constrnames = bxGetField(in_model, 0, COPTMEX_MODEL_CONNAME);
 
-  mprob.sos         = mxGetField(in_model, 0, COPTMEX_MODEL_SOS);
-  mprob.indicator   = mxGetField(in_model, 0, COPTMEX_MODEL_INDICATOR);
-  mprob.cone        = mxGetField(in_model, 0, COPTMEX_MODEL_CONE);
+  mprob.sos         = bxGetField(in_model, 0, COPTMEX_MODEL_SOS);
+  mprob.indicator   = bxGetField(in_model, 0, COPTMEX_MODEL_INDICATOR);
+  mprob.cone        = bxGetField(in_model, 0, COPTMEX_MODEL_CONE);
 
-  mprob.qobj        = mxGetField(in_model, 0, COPTMEX_MODEL_QUADOBJ);
-  mprob.quadcon     = mxGetField(in_model, 0, COPTMEX_MODEL_QUADCON);
+  mprob.qobj        = bxGetField(in_model, 0, COPTMEX_MODEL_QUADOBJ);
+  mprob.quadcon     = bxGetField(in_model, 0, COPTMEX_MODEL_QUADCON);
 
-  mprob.varbasis    = mxGetField(in_model, 0, COPTMEX_RESULT_VARBASIS);
-  mprob.constrbasis = mxGetField(in_model, 0, COPTMEX_RESULT_CONBASIS);
+  mprob.varbasis    = bxGetField(in_model, 0, COPTMEX_RESULT_VARBASIS);
+  mprob.constrbasis = bxGetField(in_model, 0, COPTMEX_RESULT_CONBASIS);
 
-  mprob.value       = mxGetField(in_model, 0, COPTMEX_RESULT_VALUE);
-  mprob.slack       = mxGetField(in_model, 0, COPTMEX_RESULT_SLACK);
-  mprob.dual        = mxGetField(in_model, 0, COPTMEX_RESULT_DUAL);
-  mprob.redcost     = mxGetField(in_model, 0, COPTMEX_RESULT_REDCOST);
+  mprob.value       = bxGetField(in_model, 0, COPTMEX_RESULT_VALUE);
+  mprob.slack       = bxGetField(in_model, 0, COPTMEX_RESULT_SLACK);
+  mprob.dual        = bxGetField(in_model, 0, COPTMEX_RESULT_DUAL);
+  mprob.redcost     = bxGetField(in_model, 0, COPTMEX_RESULT_REDCOST);
 
-  mprob.mipstart    = mxGetField(in_model, 0, COPTMEX_ADVINFO_MIPSTART);
+  mprob.mipstart    = bxGetField(in_model, 0, COPTMEX_ADVINFO_MIPSTART);
 
   if (COPTMEX_checkModel(&mprob) == 0) {
     goto exit_cleanup;
@@ -1730,22 +1730,22 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
   }
   // 'objcon'
   if (mprob.objcon != NULL) {
-    cprob.dObjConst = mxGetScalar(mprob.objcon);
+    cprob.dObjConst = bxGetScalar(mprob.objcon);
   }
   // 'A'
   if (mprob.A != NULL) {
-    cprob.nRow       = mxGetM(mprob.A);
-    cprob.nCol       = mxGetN(mprob.A);
-    cprob.nElem      = mxGetNzmax(mprob.A);
-    cprob.colMatBeg  = (int *) mxCalloc(cprob.nCol + 1, sizeof(int));
-    cprob.colMatIdx  = (int *) mxCalloc(cprob.nElem, sizeof(int));
+    cprob.nRow       = bxGetM(mprob.A);
+    cprob.nCol       = bxGetN(mprob.A);
+    cprob.nElem      = bxGetNzmax(mprob.A);
+    cprob.colMatBeg  = (int *) bxCalloc(cprob.nCol + 1, sizeof(int));
+    cprob.colMatIdx  = (int *) bxCalloc(cprob.nElem, sizeof(int));
     if (!cprob.colMatBeg || !cprob.colMatIdx) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
 
-    mwIndex *colMatBeg_data = mxGetJc(mprob.A);
-    mwIndex *colMatIdx_data = mxGetIr(mprob.A);
+    mwIndex *colMatBeg_data = bxGetJc(mprob.A);
+    mwIndex *colMatIdx_data = bxGetIr(mprob.A);
     for (int i = 0; i < cprob.nCol + 1; ++i) {
       cprob.colMatBeg[i] = (int) colMatBeg_data[i];
     }
@@ -1753,29 +1753,29 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       cprob.colMatIdx[i] = (int) colMatIdx_data[i];
     }
 
-    cprob.colMatElem = mxGetDoubles(mprob.A);
+    cprob.colMatElem = bxGetDoubles(mprob.A);
   }
   // 'obj'
   if (mprob.obj != NULL) {
-    cprob.colCost = mxGetDoubles(mprob.obj);
+    cprob.colCost = bxGetDoubles(mprob.obj);
   }
   // 'lb'
   if (mprob.lb != NULL) {
-    cprob.colLower = mxGetDoubles(mprob.lb);
+    cprob.colLower = bxGetDoubles(mprob.lb);
   }
   // 'ub'
   if (mprob.ub != NULL) {
-    cprob.colUpper = mxGetDoubles(mprob.ub);
+    cprob.colUpper = bxGetDoubles(mprob.ub);
   }
   // 'vtype'
   if (mprob.vtype != NULL) {
-    if (mxGetNumberOfElements(mprob.vtype) == cprob.nCol) {
+    if (bxGetNumberOfElements(mprob.vtype) == cprob.nCol) {
       COPTMEX_CALL(COPTMEX_getString(mprob.vtype, &cprob.colType));
     } else {
       char *vtype = NULL;
       COPTMEX_CALL(COPTMEX_getString(mprob.vtype, &vtype));
 
-      cprob.colType = (char *) mxCalloc(cprob.nCol + 1, sizeof(char));
+      cprob.colType = (char *) bxCalloc(cprob.nCol + 1, sizeof(char));
       if (!cprob.colType) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
@@ -1787,24 +1787,24 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
   }
   // 'varnames'
   if (mprob.varnames != NULL) {
-    cprob.colNames = (char **) mxCalloc(cprob.nCol, sizeof(char *));
+    cprob.colNames = (char **) bxCalloc(cprob.nCol, sizeof(char *));
     for (int i = 0; i < cprob.nCol; ++i) {
-      mxArray *nameCell = mxGetCell(mprob.varnames, i);
+      bxArray *nameCell = bxGetCell(mprob.varnames, i);
       COPTMEX_CALL(COPTMEX_getString(nameCell, &cprob.colNames[i]));
     }
   }
   // 'sense', 'lhs' and 'rhs'
   if (mprob.sense == NULL) {
-    cprob.rowLower = mxGetDoubles(mprob.lhs);
-    cprob.rowUpper = mxGetDoubles(mprob.rhs);
+    cprob.rowLower = bxGetDoubles(mprob.lhs);
+    cprob.rowUpper = bxGetDoubles(mprob.rhs);
   } else {
-    if (mxGetNumberOfElements(mprob.sense) == cprob.nRow) {
+    if (bxGetNumberOfElements(mprob.sense) == cprob.nRow) {
       COPTMEX_CALL(COPTMEX_getString(mprob.sense, &cprob.rowSense));
     } else {
       char *rsense = NULL;
       COPTMEX_CALL(COPTMEX_getString(mprob.sense, &rsense));
 
-      cprob.rowSense = (char *) mxCalloc(cprob.nRow + 1, sizeof(char));
+      cprob.rowSense = (char *) bxCalloc(cprob.nRow + 1, sizeof(char));
       if (!cprob.rowSense) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
@@ -1814,13 +1814,13 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       }
     }
 
-    cprob.rowUpper = mxGetDoubles(mprob.rhs);
+    cprob.rowUpper = bxGetDoubles(mprob.rhs);
   }
   // 'constrnames'
   if (mprob.constrnames != NULL) {
-    cprob.rowNames = (char **) mxCalloc(cprob.nRow, sizeof(char *));
+    cprob.rowNames = (char **) bxCalloc(cprob.nRow, sizeof(char *));
     for (int i = 0; i < cprob.nRow; ++i) {
-      mxArray *namecell = mxGetCell(mprob.constrnames, i);
+      bxArray *namecell = bxGetCell(mprob.constrnames, i);
       COPTMEX_CALL(COPTMEX_getString(namecell, &cprob.rowNames[i]));
     }
   }
@@ -1844,78 +1844,78 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
   
   // Extract and load the optional SOS part
   if (mprob.sos != NULL) {
-    for (int i = 0; i < mxGetNumberOfElements(mprob.sos); ++i) {
-      mxArray *sostype_m = mxGetField(mprob.sos, i, COPTMEX_MODEL_SOSTYPE);
-      mxArray *sosvars_m = mxGetField(mprob.sos, i, COPTMEX_MODEL_SOSVARS);
-      mxArray *soswgts_m = mxGetField(mprob.sos, i, COPTMEX_MODEL_SOSWEIGHT);
+    for (int i = 0; i < bxGetNumberOfElements(mprob.sos); ++i) {
+      bxArray *sostype_m = bxGetField(mprob.sos, i, COPTMEX_MODEL_SOSTYPE);
+      bxArray *sosvars_m = bxGetField(mprob.sos, i, COPTMEX_MODEL_SOSVARS);
+      bxArray *soswgts_m = bxGetField(mprob.sos, i, COPTMEX_MODEL_SOSWEIGHT);
 
-      int sosType    = (int) mxGetScalar(sostype_m);
+      int sosType    = (int) bxGetScalar(sostype_m);
       int sosMatBeg  = 0;
-      int sosMatCnt  = (int) mxGetNumberOfElements(sosvars_m);
-      int *sosMatIdx = (int *) mxCalloc(sosMatCnt, sizeof(int));
+      int sosMatCnt  = (int) bxGetNumberOfElements(sosvars_m);
+      int *sosMatIdx = (int *) bxCalloc(sosMatCnt, sizeof(int));
       if (!sosMatIdx) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      double *sosvars_data = mxGetDoubles(sosvars_m);
+      double *sosvars_data = bxGetDoubles(sosvars_m);
       for (int i = 0; i < sosMatCnt; ++i) {
         sosMatIdx[i] = (int) sosvars_data[i] - 1;
       }
 
       double *sosMatWt = NULL;
       if (soswgts_m != NULL) {
-        sosMatWt = mxGetDoubles(soswgts_m);
+        sosMatWt = bxGetDoubles(soswgts_m);
       }
 
       COPTMEX_CALL(COPT_AddSOSs(prob, 1, &sosType, &sosMatBeg, &sosMatCnt,
                    sosMatIdx, sosMatWt));
       
-      mxFree(sosMatIdx);
+      bxFree(sosMatIdx);
     }
   }
 
   // Extract and load the optional indicator part
   if (mprob.indicator != NULL) {
-    for (int i = 0; i < mxGetNumberOfElements(mprob.indicator); ++i) {
-      mxArray *binVar = mxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAR);
-      mxArray *binVal = mxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAL);
-      mxArray *indicA = mxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICROW);
-      mxArray *rSense = mxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICSENSE);
-      mxArray *rowBnd = mxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICRHS);
+    for (int i = 0; i < bxGetNumberOfElements(mprob.indicator); ++i) {
+      bxArray *binVar = bxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAR);
+      bxArray *binVal = bxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICBINVAL);
+      bxArray *indicA = bxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICROW);
+      bxArray *rSense = bxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICSENSE);
+      bxArray *rowBnd = bxGetField(mprob.indicator, i, COPTMEX_MODEL_INDICRHS);
 
-      int binColIdx  = (int) mxGetScalar(binVar) - 1;
-      int binColVal  = (int) mxGetScalar(binVal);
+      int binColIdx  = (int) bxGetScalar(binVar) - 1;
+      int binColVal  = (int) bxGetScalar(binVal);
       int nRowMatCnt = 0;
       int *rowMatIdx = NULL;
       double *rowMatElem = NULL;
 
-      if (mxIsSparse(indicA)) {
-        nRowMatCnt = mxGetNzmax(indicA);
-        rowMatIdx  = (int *) mxCalloc(nRowMatCnt, sizeof(int));
+      if (bxIsSparse(indicA)) {
+        nRowMatCnt = bxGetNzmax(indicA);
+        rowMatIdx  = (int *) bxCalloc(nRowMatCnt, sizeof(int));
         if (!rowMatIdx) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
         }
-        mwIndex *rowMatIdx_data = mxGetIr(indicA);
+        mwIndex *rowMatIdx_data = bxGetIr(indicA);
         for (int i = 0; i < nRowMatCnt; ++i) {
           rowMatIdx[i] = rowMatIdx_data[i];
         }
-        rowMatElem = mxGetDoubles(indicA);
+        rowMatElem = bxGetDoubles(indicA);
       } else {
-        double *rowMatElem_data = mxGetDoubles(indicA);
-        for (int i = 0; i < mxGetNumberOfElements(indicA); ++i) {
+        double *rowMatElem_data = bxGetDoubles(indicA);
+        for (int i = 0; i < bxGetNumberOfElements(indicA); ++i) {
           if (rowMatElem_data[i] != 0) {
             ++nRowMatCnt;
           }
         }
-        rowMatIdx = (int *) mxCalloc(nRowMatCnt, sizeof(int));
-        rowMatElem = (double *) mxCalloc(nRowMatCnt, sizeof(double));
+        rowMatIdx = (int *) bxCalloc(nRowMatCnt, sizeof(int));
+        rowMatElem = (double *) bxCalloc(nRowMatCnt, sizeof(double));
         if (!rowMatIdx || !rowMatElem) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
         }
-        for (int i = 0, iElem = 0; i < mxGetNumberOfElements(indicA); ++i) {
+        for (int i = 0, iElem = 0; i < bxGetNumberOfElements(indicA); ++i) {
           if (rowMatElem_data[i] != 0) {
             rowMatIdx[iElem] = i;
             rowMatElem[iElem] = rowMatElem_data[i];
@@ -1925,51 +1925,51 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       }
 
       char cRowSense[2];
-      mxGetString(rSense, cRowSense, 2);
-      double dRowBound = mxGetScalar(rowBnd);
+      bxGetString(rSense, cRowSense, 2);
+      double dRowBound = bxGetScalar(rowBnd);
 
       COPTMEX_CALL(COPT_AddIndicator(prob, binColIdx, binColVal, nRowMatCnt,
                    rowMatIdx, rowMatElem, cRowSense[0], dRowBound));
 
-      mxFree(rowMatIdx);
-      if (!mxIsSparse(indicA)) {
-        mxFree(rowMatElem);
+      bxFree(rowMatIdx);
+      if (!bxIsSparse(indicA)) {
+        bxFree(rowMatElem);
       }
     }
   }
 
   // Extract and load the optional cone part
   if (mprob.cone != NULL) {
-    for (int i = 0; i < mxGetNumberOfElements(mprob.cone); ++i) {
-      mxArray *conetype_m = mxGetField(mprob.cone, i, COPTMEX_MODEL_CONETYPE);
-      mxArray *conevars_m = mxGetField(mprob.cone, i, COPTMEX_MODEL_CONEVARS);
+    for (int i = 0; i < bxGetNumberOfElements(mprob.cone); ++i) {
+      bxArray *conetype_m = bxGetField(mprob.cone, i, COPTMEX_MODEL_CONETYPE);
+      bxArray *conevars_m = bxGetField(mprob.cone, i, COPTMEX_MODEL_CONEVARS);
 
-      int coneType = (int) mxGetScalar(conetype_m);
+      int coneType = (int) bxGetScalar(conetype_m);
       int coneBeg = 0;
-      int coneCnt = (int) mxGetNumberOfElements(conevars_m);
-      int *coneIdx = (int *) mxCalloc(coneCnt, sizeof(int));
+      int coneCnt = (int) bxGetNumberOfElements(conevars_m);
+      int *coneIdx = (int *) bxCalloc(coneCnt, sizeof(int));
       if (!coneIdx) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
-      double *conevars_data = mxGetDoubles(conevars_m);
+      double *conevars_data = bxGetDoubles(conevars_m);
       for (int i = 0; i < coneCnt; ++i) {
         coneIdx[i] = (int) conevars_data[i] - 1;
       }
 
       COPTMEX_CALL(COPT_AddCones(prob, 1, &coneType, &coneBeg, &coneCnt, coneIdx));
 
-      mxFree(coneIdx);
+      bxFree(coneIdx);
     }
   }
 
   // Extract and load optional Q objective part
   if (mprob.qobj != NULL) {
-    cprob.nQElem = mxGetNzmax(mprob.qobj);
-    int *qObjRow = (int *) mxCalloc(cprob.nQElem, sizeof(int));
-    int *qObjCol = (int *) mxCalloc(cprob.nQElem, sizeof(int));
-    double *qObjElem = (double *) mxCalloc(cprob.nQElem, sizeof(double));
+    cprob.nQElem = bxGetNzmax(mprob.qobj);
+    int *qObjRow = (int *) bxCalloc(cprob.nQElem, sizeof(int));
+    int *qObjCol = (int *) bxCalloc(cprob.nQElem, sizeof(int));
+    double *qObjElem = (double *) bxCalloc(cprob.nQElem, sizeof(double));
     if (!qObjRow || !qObjCol || !qObjElem) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -1978,22 +1978,22 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
     COPTMEX_csc2coo(mprob.qobj, qObjRow, qObjCol, qObjElem);
     COPTMEX_CALL(COPT_SetQuadObj(prob, cprob.nQElem, qObjRow, qObjCol, qObjElem));
 
-    mxFree(qObjRow);
-    mxFree(qObjCol);
-    mxFree(qObjElem);
+    bxFree(qObjRow);
+    bxFree(qObjCol);
+    bxFree(qObjElem);
   }
 
   // Extract and load optional quadratic constraint part
   if (mprob.quadcon != NULL) {
-    for (int i = 0; i < mxGetNumberOfElements(mprob.quadcon); ++i) {
-      mxArray *QcMat = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCSPMAT);
-      mxArray *QcRow = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCROW);
-      mxArray *QcCol = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCCOL);
-      mxArray *QcVal = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCVAL);
-      mxArray *QcLinear = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCLINEAR);
-      mxArray *QcSense = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCSENSE);
-      mxArray *QcRhs = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCRHS);
-      mxArray *QcName = mxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCNAME);
+    for (int i = 0; i < bxGetNumberOfElements(mprob.quadcon); ++i) {
+      bxArray *QcMat = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCSPMAT);
+      bxArray *QcRow = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCROW);
+      bxArray *QcCol = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCCOL);
+      bxArray *QcVal = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCVAL);
+      bxArray *QcLinear = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCLINEAR);
+      bxArray *QcSense = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCSENSE);
+      bxArray *QcRhs = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCRHS);
+      bxArray *QcName = bxGetField(mprob.quadcon, i, COPTMEX_MODEL_QCNAME);
 
       int nQMatElem = 0;
       int *qMatRow = NULL;
@@ -2007,10 +2007,10 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       char qRowName[COPT_BUFFSIZE] = {0};
 
       if (QcMat != NULL) {
-        nQMatElem = mxGetNzmax(QcMat);
-        qMatRow = (int *) mxCalloc(nQMatElem, sizeof(int));
-        qMatCol = (int *) mxCalloc(nQMatElem, sizeof(int));
-        qMatElem = (double *) mxCalloc(nQMatElem, sizeof(double));
+        nQMatElem = bxGetNzmax(QcMat);
+        qMatRow = (int *) bxCalloc(nQMatElem, sizeof(int));
+        qMatCol = (int *) bxCalloc(nQMatElem, sizeof(int));
+        qMatElem = (double *) bxCalloc(nQMatElem, sizeof(double));
         if (!qMatRow || !qMatCol || !qMatElem) {
           retcode = COPT_RETCODE_MEMORY;
           goto exit_cleanup;
@@ -2019,17 +2019,17 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
         COPTMEX_csc2coo(QcMat, qMatRow, qMatCol, qMatElem);
       } else {
         if (QcRow != NULL && QcCol != NULL && QcVal != NULL) {
-          nQMatElem = mxGetNumberOfElements(QcRow);
-          qMatRow = (int *) mxCalloc(nQMatElem, sizeof(int));
-          qMatCol = (int *) mxCalloc(nQMatElem, sizeof(int));
+          nQMatElem = bxGetNumberOfElements(QcRow);
+          qMatRow = (int *) bxCalloc(nQMatElem, sizeof(int));
+          qMatCol = (int *) bxCalloc(nQMatElem, sizeof(int));
           if (!qMatRow || !qMatCol) {
             retcode = COPT_RETCODE_MEMORY;
             goto exit_cleanup;
           }
 
-          double *qMatRow_data = mxGetDoubles(QcRow);
-          double *qMatCol_data = mxGetDoubles(QcCol);
-          qMatElem = mxGetDoubles(QcVal);
+          double *qMatRow_data = bxGetDoubles(QcRow);
+          double *qMatCol_data = bxGetDoubles(QcCol);
+          qMatElem = bxGetDoubles(QcVal);
           for (int i = 0; i < nQMatElem; ++i) {
             qMatRow[i] = (int) qMatRow_data[i] - 1;
             qMatCol[i] = (int) qMatCol_data[i] - 1;
@@ -2038,22 +2038,22 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       }
 
       if (QcLinear != NULL) {
-        if (mxIsSparse(QcLinear)) {
-          double *qRowMatElem_data = mxGetDoubles(QcLinear);
-          for (int i = 0; i < mxGetNzmax(QcLinear); ++i) {
+        if (bxIsSparse(QcLinear)) {
+          double *qRowMatElem_data = bxGetDoubles(QcLinear);
+          for (int i = 0; i < bxGetNzmax(QcLinear); ++i) {
             if (qRowMatElem_data[i] != 0.0) {
               ++nQRowElem;
             }
           }
           if (nQRowElem > 0) {
-            qRowMatIdx = (int *) mxCalloc(nQRowElem, sizeof(int));
-            qRowMatElem = (double *) mxCalloc(nQRowElem, sizeof(double));
+            qRowMatIdx = (int *) bxCalloc(nQRowElem, sizeof(int));
+            qRowMatElem = (double *) bxCalloc(nQRowElem, sizeof(double));
             if (!qRowMatIdx || !qRowMatElem) {
               retcode = COPT_RETCODE_MEMORY;
               goto exit_cleanup;
             }
-            mwIndex *qRowMatIdx_data = mxGetIr(QcLinear);
-            for (int i = 0, iElem = 0; i < mxGetNzmax(QcLinear); ++i) {
+            mwIndex *qRowMatIdx_data = bxGetIr(QcLinear);
+            for (int i = 0, iElem = 0; i < bxGetNzmax(QcLinear); ++i) {
               if (qRowMatElem_data[i] != 0.0) {
                 qRowMatIdx[iElem] = (int) qRowMatIdx_data[i];
                 qRowMatElem[iElem] = qRowMatElem_data[i];
@@ -2062,20 +2062,20 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
             }
           }
         } else {
-          double *qRowMatElem_data = mxGetDoubles(QcLinear);
-          for (int i = 0; i < mxGetNumberOfElements(QcLinear); ++i) {
+          double *qRowMatElem_data = bxGetDoubles(QcLinear);
+          for (int i = 0; i < bxGetNumberOfElements(QcLinear); ++i) {
             if (qRowMatElem_data[i] != 0.0) {
               ++nQRowElem;
             }
           }
           if (nQRowElem > 0) {
-            qRowMatIdx = (int *) mxCalloc(nQRowElem, sizeof(int));
-            qRowMatElem = (double *) mxCalloc(nQRowElem, sizeof(double));
+            qRowMatIdx = (int *) bxCalloc(nQRowElem, sizeof(int));
+            qRowMatElem = (double *) bxCalloc(nQRowElem, sizeof(double));
             if (!qRowMatIdx || !qRowMatElem) {
               retcode = COPT_RETCODE_MEMORY;
               goto exit_cleanup;
             }
-            for (int i = 0, iElem = 0; i < mxGetNumberOfElements(QcLinear); ++i) {
+            for (int i = 0, iElem = 0; i < bxGetNumberOfElements(QcLinear); ++i) {
               if (qRowMatElem_data[i] != 0.0) {
                 qRowMatIdx[iElem] = i;
                 qRowMatElem[iElem] = qRowMatElem_data[i];
@@ -2087,43 +2087,43 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
       }
 
       if (QcSense != NULL) {
-        mxGetString(QcSense, qRowSense, 2);
+        bxGetString(QcSense, qRowSense, 2);
       } else {
         qRowSense[0] = COPT_LESS_EQUAL;
       }
-      qRowBound = mxGetScalar(QcRhs);
+      qRowBound = bxGetScalar(QcRhs);
       if (QcName != NULL) {
-        mxGetString(QcName, qRowName, COPT_BUFFSIZE);
+        bxGetString(QcName, qRowName, COPT_BUFFSIZE);
       }
 
       COPTMEX_CALL(COPT_AddQConstr(prob, nQRowElem, qRowMatIdx, qRowMatElem, 
                    nQMatElem, qMatRow, qMatCol, qMatElem, qRowSense[0], qRowBound,
                    qRowName));
 
-      mxFree(qMatRow);
-      mxFree(qMatCol);
+      bxFree(qMatRow);
+      bxFree(qMatCol);
       if (QcMat != NULL) {
-        mxFree(qMatElem);
+        bxFree(qMatElem);
       }
 
       if (nQRowElem > 0) {
-        mxFree(qRowMatIdx);
-        mxFree(qRowMatElem);
+        bxFree(qRowMatIdx);
+        bxFree(qRowMatElem);
       }
     }
   }
 
   // Extract and load the optional advanced information
   if (mprob.varbasis != NULL && mprob.constrbasis != NULL) {
-    cprob.colBasis = (int *) mxCalloc(cprob.nCol, sizeof(int));
-    cprob.rowBasis = (int *) mxCalloc(cprob.nRow, sizeof(int));
+    cprob.colBasis = (int *) bxCalloc(cprob.nCol, sizeof(int));
+    cprob.rowBasis = (int *) bxCalloc(cprob.nRow, sizeof(int));
     if (!cprob.colBasis || !cprob.rowBasis) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
     }
     
-    double *colBasis_data = mxGetDoubles(mprob.varbasis);
-    double *rowBasis_data = mxGetDoubles(mprob.constrbasis);
+    double *colBasis_data = bxGetDoubles(mprob.varbasis);
+    double *rowBasis_data = bxGetDoubles(mprob.constrbasis);
     for (int i = 0; i < cprob.nCol; ++i) {
       cprob.colBasis[i] = (int) colBasis_data[i];
     }
@@ -2133,15 +2133,15 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
 
     COPTMEX_CALL(COPT_SetBasis(prob, cprob.colBasis, cprob.rowBasis));
 
-    mxFree(cprob.colBasis);
-    mxFree(cprob.rowBasis);
+    bxFree(cprob.colBasis);
+    bxFree(cprob.rowBasis);
   }
 
   if (mprob.value != NULL && mprob.slack != NULL && mprob.dual != NULL && mprob.redcost != NULL) {
-    double *colValue = mxGetDoubles(mprob.value);
-    double *colDual  = mxGetDoubles(mprob.redcost);
-    double *rowSlack = mxGetDoubles(mprob.slack);
-    double *rowDual  = mxGetDoubles(mprob.dual);
+    double *colValue = bxGetDoubles(mprob.value);
+    double *colDual  = bxGetDoubles(mprob.redcost);
+    double *rowSlack = bxGetDoubles(mprob.slack);
+    double *rowDual  = bxGetDoubles(mprob.dual);
 
     COPTMEX_CALL(COPT_SetLpSolution(prob, colValue, rowSlack, rowDual, colDual));
   }
@@ -2151,34 +2151,34 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
     int *rowIdx = NULL;
     double *rowElem = NULL;
 
-    if (mxIsSparse(mprob.mipstart)) {
-      nRowCnt = mxGetNzmax(mprob.mipstart);
-      rowIdx = (int *) mxCalloc(nRowCnt, sizeof(int));
+    if (bxIsSparse(mprob.mipstart)) {
+      nRowCnt = bxGetNzmax(mprob.mipstart);
+      rowIdx = (int *) bxCalloc(nRowCnt, sizeof(int));
       if (!rowIdx) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
-      mwIndex *rowIdx_data = mxGetIr(mprob.mipstart);
+      mwIndex *rowIdx_data = bxGetIr(mprob.mipstart);
       for (int i = 0; i < nRowCnt; ++i) {
         rowIdx[i] = rowIdx_data[i];
       }
-      rowElem = mxGetDoubles(mprob.mipstart);
+      rowElem = bxGetDoubles(mprob.mipstart);
 
       COPTMEX_CALL(COPT_AddMipStart(prob, nRowCnt, rowIdx, rowElem));
 
-      mxFree(rowIdx);
+      bxFree(rowIdx);
     } else {
-      double *rowElem_data = mxGetDoubles(mprob.mipstart);
+      double *rowElem_data = bxGetDoubles(mprob.mipstart);
 
-      nRowCnt = mxGetNumberOfElements(mprob.mipstart);
-      rowElem = (double *) mxCalloc(nRowCnt, sizeof(double));
+      nRowCnt = bxGetNumberOfElements(mprob.mipstart);
+      rowElem = (double *) bxCalloc(nRowCnt, sizeof(double));
       if (!rowElem) {
         retcode = COPT_RETCODE_MEMORY;
         goto exit_cleanup;
       }
 
       for (int i = 0; i < nRowCnt; ++i) {
-        if (mxIsNaN(rowElem_data[i])) {
+        if (bxIsNaN(rowElem_data[i])) {
           rowElem[i] = COPT_UNDEFINED;
         } else {
           rowElem[i] = rowElem_data[i];
@@ -2187,7 +2187,7 @@ int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model) {
 
       COPTMEX_CALL(COPT_AddMipStart(prob, nRowCnt, NULL, rowElem));
 
-      mxFree(rowElem); 
+      bxFree(rowElem); 
     }
   }
 
@@ -2196,12 +2196,12 @@ exit_cleanup:
 }
 
 /* Extract IIS information */
-static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
+static int COPTMEX_getIIS(copt_prob *prob, bxArray **out_iis) {
   int retcode = COPT_RETCODE_OK;
   int nRow = 0, nCol = 0, nSos = 0, nIndicator = 0;
   int hasIIS = 0;
   int isMinIIS = 0;
-  mxArray *iisInfo = NULL;
+  bxArray *iisInfo = NULL;
   coptmex_ciisinfo ciisinfo;
   coptmex_miisinfo miisinfo;
 
@@ -2219,15 +2219,15 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_SOSS, &nSos));
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_INDICATORS, &nIndicator));
 
-  miisinfo.isminiis = mxCreateDoubleMatrix(1, 1, mxREAL);
+  miisinfo.isminiis = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!miisinfo.isminiis) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   if (nCol > 0) {
-    miisinfo.varlb = mxCreateLogicalMatrix(nCol, 1);
-    miisinfo.varub = mxCreateLogicalMatrix(nCol, 1);
+    miisinfo.varlb = bxCreateLogicalMatrix(nCol, 1);
+    miisinfo.varub = bxCreateLogicalMatrix(nCol, 1);
     if (!miisinfo.varlb || !miisinfo.varub) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2235,8 +2235,8 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nRow > 0) {
-    miisinfo.constrlb = mxCreateLogicalMatrix(nRow, 1);
-    miisinfo.construb = mxCreateLogicalMatrix(nRow, 1);
+    miisinfo.constrlb = bxCreateLogicalMatrix(nRow, 1);
+    miisinfo.construb = bxCreateLogicalMatrix(nRow, 1);
     if (!miisinfo.constrlb || !miisinfo.construb) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2244,7 +2244,7 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nSos > 0) {
-    miisinfo.sos = mxCreateLogicalMatrix(nSos, 1);
+    miisinfo.sos = bxCreateLogicalMatrix(nSos, 1);
     if (!miisinfo.sos) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2252,7 +2252,7 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nIndicator > 0) {
-    miisinfo.indicator = mxCreateLogicalMatrix(nIndicator, 1);
+    miisinfo.indicator = bxCreateLogicalMatrix(nIndicator, 1);
     if (!miisinfo.indicator) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2260,8 +2260,8 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nCol > 0) {
-    ciisinfo.colLowerIIS = (int *) mxCalloc(nCol, sizeof(int));
-    ciisinfo.colUpperIIS = (int *) mxCalloc(nCol, sizeof(int));
+    ciisinfo.colLowerIIS = (int *) bxCalloc(nCol, sizeof(int));
+    ciisinfo.colUpperIIS = (int *) bxCalloc(nCol, sizeof(int));
     if (!ciisinfo.colLowerIIS || !ciisinfo.colUpperIIS) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2269,8 +2269,8 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nRow > 0) {
-    ciisinfo.rowLowerIIS = (int *) mxCalloc(nRow, sizeof(int));
-    ciisinfo.rowUpperIIS = (int *) mxCalloc(nRow, sizeof(int));
+    ciisinfo.rowLowerIIS = (int *) bxCalloc(nRow, sizeof(int));
+    ciisinfo.rowUpperIIS = (int *) bxCalloc(nRow, sizeof(int));
     if (!ciisinfo.rowLowerIIS || !ciisinfo.rowUpperIIS) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2278,7 +2278,7 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nSos > 0) {
-    ciisinfo.sosIIS = (int *) mxCalloc(nSos, sizeof(int));
+    ciisinfo.sosIIS = (int *) bxCalloc(nSos, sizeof(int));
     if (!ciisinfo.sosIIS) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2286,7 +2286,7 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
   }
 
   if (nIndicator > 0) {
-    ciisinfo.indicatorIIS = (int *) mxCalloc(nIndicator, sizeof(int));
+    ciisinfo.indicatorIIS = (int *) bxCalloc(nIndicator, sizeof(int));
     if (!ciisinfo.indicatorIIS) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2313,84 +2313,84 @@ static int COPTMEX_getIIS(copt_prob *prob, mxArray **out_iis) {
     COPTMEX_CALL(COPT_GetIndicatorIIS(prob, nIndicator, NULL, ciisinfo.indicatorIIS));
   }
 
-  *mxGetDoubles(miisinfo.isminiis) = isMinIIS;
+  *bxGetDoubles(miisinfo.isminiis) = isMinIIS;
 
   if (nCol > 0) {
-    mxLogical *colLowerIIS_data = mxGetLogicals(miisinfo.varlb);
-    mxLogical *colUpperIIS_data = mxGetLogicals(miisinfo.varub);
+    bxLogical *colLowerIIS_data = bxGetLogicals(miisinfo.varlb);
+    bxLogical *colUpperIIS_data = bxGetLogicals(miisinfo.varub);
     for (int i = 0; i < nCol; ++i) {
       colLowerIIS_data[i] = ciisinfo.colLowerIIS[i];
       colUpperIIS_data[i] = ciisinfo.colUpperIIS[i];
     }
-    mxFree(ciisinfo.colLowerIIS);
-    mxFree(ciisinfo.colUpperIIS);
+    bxFree(ciisinfo.colLowerIIS);
+    bxFree(ciisinfo.colUpperIIS);
   }
 
   if (nRow > 0) {
-    mxLogical *rowLowerIIS_data = mxGetLogicals(miisinfo.constrlb);
-    mxLogical *rowUpperIIS_data = mxGetLogicals(miisinfo.construb);
+    bxLogical *rowLowerIIS_data = bxGetLogicals(miisinfo.constrlb);
+    bxLogical *rowUpperIIS_data = bxGetLogicals(miisinfo.construb);
     for (int i = 0; i < nRow; ++i) {
       rowLowerIIS_data[i] = ciisinfo.rowLowerIIS[i];
       rowUpperIIS_data[i] = ciisinfo.rowUpperIIS[i];
     }
-    mxFree(ciisinfo.rowLowerIIS);
-    mxFree(ciisinfo.rowUpperIIS);
+    bxFree(ciisinfo.rowLowerIIS);
+    bxFree(ciisinfo.rowUpperIIS);
   }
 
   if (nSos > 0) {
-    mxLogical *sosIIS_data = mxGetLogicals(miisinfo.sos);
+    bxLogical *sosIIS_data = bxGetLogicals(miisinfo.sos);
     for (int i = 0; i < nSos; ++i) {
       sosIIS_data[i] = ciisinfo.sosIIS[i];
     }
-    mxFree(ciisinfo.sosIIS);
+    bxFree(ciisinfo.sosIIS);
   }
 
   if (nIndicator > 0) {
-    mxLogical *indicatorIIS_data = mxGetLogicals(miisinfo.indicator);
+    bxLogical *indicatorIIS_data = bxGetLogicals(miisinfo.indicator);
     for (int i = 0; i < nIndicator; ++i) {
       indicatorIIS_data[i] = ciisinfo.indicatorIIS[i];
     }
-    mxFree(ciisinfo.indicatorIIS);
+    bxFree(ciisinfo.indicatorIIS);
   }
 
-  iisInfo = mxCreateStructMatrix(1, 1, 0, NULL);
+  iisInfo = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!iisInfo) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'isminiis'
-  mxAddField(iisInfo, COPTMEX_IIS_ISMINIIS);
-  mxSetField(iisInfo, 0, COPTMEX_IIS_ISMINIIS, miisinfo.isminiis);
+  bxAddField(iisInfo, COPTMEX_IIS_ISMINIIS);
+  bxSetField(iisInfo, 0, COPTMEX_IIS_ISMINIIS, miisinfo.isminiis);
 
   if (nCol > 0) {
     // 'varlb'
-    mxAddField(iisInfo, COPTMEX_IIS_VARLB);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_VARLB, miisinfo.varlb);
+    bxAddField(iisInfo, COPTMEX_IIS_VARLB);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_VARLB, miisinfo.varlb);
     // 'varub'
-    mxAddField(iisInfo, COPTMEX_IIS_VARUB);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_VARUB, miisinfo.varub);
+    bxAddField(iisInfo, COPTMEX_IIS_VARUB);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_VARUB, miisinfo.varub);
   }
 
   if (nRow > 0) {
     // 'constrlb'
-    mxAddField(iisInfo, COPTMEX_IIS_CONSTRLB);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_CONSTRLB, miisinfo.constrlb);
+    bxAddField(iisInfo, COPTMEX_IIS_CONSTRLB);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_CONSTRLB, miisinfo.constrlb);
     // 'construb'
-    mxAddField(iisInfo, COPTMEX_IIS_CONSTRUB);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_CONSTRUB, miisinfo.construb);
+    bxAddField(iisInfo, COPTMEX_IIS_CONSTRUB);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_CONSTRUB, miisinfo.construb);
   }
 
   if (nSos > 0) {
     // 'sos'
-    mxAddField(iisInfo, COPTMEX_IIS_SOS);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_SOS, miisinfo.sos);
+    bxAddField(iisInfo, COPTMEX_IIS_SOS);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_SOS, miisinfo.sos);
   }
 
   if (nIndicator > 0) {
     // 'indicator'
-    mxAddField(iisInfo, COPTMEX_IIS_INDICATOR);
-    mxSetField(iisInfo, 0, COPTMEX_IIS_INDICATOR, miisinfo.indicator);
+    bxAddField(iisInfo, COPTMEX_IIS_INDICATOR);
+    bxSetField(iisInfo, 0, COPTMEX_IIS_INDICATOR, miisinfo.indicator);
   }
 
   // Write out IIS problem
@@ -2407,7 +2407,7 @@ exit_cleanup:
 }
 
 /* Compute IIS for infeasible problem */
-int COPTMEX_computeIIS(copt_prob *prob, mxArray **out_iis, int ifRetResult) {
+int COPTMEX_computeIIS(copt_prob *prob, bxArray **out_iis, int ifRetResult) {
   int retcode = COPT_RETCODE_OK;
   int modelStatus = 0;
   int isMIP = 0;
@@ -2425,11 +2425,11 @@ exit_cleanup:
 }
 
 /* Extract feasibility relaxation information */
-static int COPTMEX_getFeasRelax(copt_prob *prob, mxArray **out_relax) {
+static int COPTMEX_getFeasRelax(copt_prob *prob, bxArray **out_relax) {
   int retcode = COPT_RETCODE_OK;
   int nRow = 0, nCol = 0;
   int hasFeasRelax = 0;
-  mxArray *relaxInfo = NULL;
+  bxArray *relaxInfo = NULL;
   coptmex_crelaxinfo crelaxinfo;
   coptmex_mrelaxinfo mrelaxinfo;
 
@@ -2445,15 +2445,15 @@ static int COPTMEX_getFeasRelax(copt_prob *prob, mxArray **out_relax) {
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_ROWS, &nRow));
   COPTMEX_CALL(COPT_GetIntAttr(prob, COPT_INTATTR_COLS, &nCol));
 
-  mrelaxinfo.relaxobj = mxCreateDoubleMatrix(1, 1, mxREAL);
+  mrelaxinfo.relaxobj = bxCreateDoubleMatrix(1, 1, bxREAL);
   if (!mrelaxinfo.relaxobj) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   if (nCol > 0) {
-    mrelaxinfo.relaxlb = mxCreateDoubleMatrix(nCol, 1, mxREAL);
-    mrelaxinfo.relaxub = mxCreateDoubleMatrix(nCol, 1, mxREAL);
+    mrelaxinfo.relaxlb = bxCreateDoubleMatrix(nCol, 1, bxREAL);
+    mrelaxinfo.relaxub = bxCreateDoubleMatrix(nCol, 1, bxREAL);
     if (!mrelaxinfo.relaxlb || !mrelaxinfo.relaxub) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2461,8 +2461,8 @@ static int COPTMEX_getFeasRelax(copt_prob *prob, mxArray **out_relax) {
   }
 
   if (nRow > 0) {
-    mrelaxinfo.relaxlhs = mxCreateDoubleMatrix(nRow, 1, mxREAL);
-    mrelaxinfo.relaxrhs = mxCreateDoubleMatrix(nRow, 1, mxREAL);
+    mrelaxinfo.relaxlhs = bxCreateDoubleMatrix(nRow, 1, bxREAL);
+    mrelaxinfo.relaxrhs = bxCreateDoubleMatrix(nRow, 1, bxREAL);
     if (!mrelaxinfo.relaxlhs || !mrelaxinfo.relaxrhs) {
       retcode = COPT_RETCODE_MEMORY;
       goto exit_cleanup;
@@ -2470,17 +2470,17 @@ static int COPTMEX_getFeasRelax(copt_prob *prob, mxArray **out_relax) {
   }
 
   if (nCol > 0) {
-    crelaxinfo.colLowRlx = mxGetDoubles(mrelaxinfo.relaxlb);
-    crelaxinfo.colUppRlx = mxGetDoubles(mrelaxinfo.relaxub);
+    crelaxinfo.colLowRlx = bxGetDoubles(mrelaxinfo.relaxlb);
+    crelaxinfo.colUppRlx = bxGetDoubles(mrelaxinfo.relaxub);
   }
 
   if (nRow > 0) {
-    crelaxinfo.rowLowRlx = mxGetDoubles(mrelaxinfo.relaxlhs);
-    crelaxinfo.rowUppRlx = mxGetDoubles(mrelaxinfo.relaxrhs);
+    crelaxinfo.rowLowRlx = bxGetDoubles(mrelaxinfo.relaxlhs);
+    crelaxinfo.rowUppRlx = bxGetDoubles(mrelaxinfo.relaxrhs);
   }
 
   COPTMEX_CALL(COPT_GetDblAttr(prob, COPT_DBLATTR_FEASRELAXOBJ, &crelaxinfo.dObjVal));
-  *mxGetDoubles(mrelaxinfo.relaxobj) = crelaxinfo.dObjVal;
+  *bxGetDoubles(mrelaxinfo.relaxobj) = crelaxinfo.dObjVal;
 
   if (nCol > 0) {
     COPTMEX_CALL(COPT_GetColInfo(prob, COPT_DBLINFO_RELAXLB, nCol, NULL, crelaxinfo.colLowRlx));
@@ -2492,32 +2492,32 @@ static int COPTMEX_getFeasRelax(copt_prob *prob, mxArray **out_relax) {
     COPTMEX_CALL(COPT_GetRowInfo(prob, COPT_DBLINFO_RELAXUB, nRow, NULL, crelaxinfo.rowUppRlx));
   }
 
-  relaxInfo = mxCreateStructMatrix(1, 1, 0, NULL);
+  relaxInfo = bxCreateStructMatrix(1, 1, 0, NULL);
   if (!relaxInfo) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
   }
 
   // 'relaxobj'
-  mxAddField(relaxInfo, COPTMEX_FEASRELAX_OBJ);
-  mxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_OBJ, mrelaxinfo.relaxobj);
+  bxAddField(relaxInfo, COPTMEX_FEASRELAX_OBJ);
+  bxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_OBJ, mrelaxinfo.relaxobj);
 
   if (nCol > 0) {
     // 'relaxlb'
-    mxAddField(relaxInfo, COPTMEX_FEASRELAX_LB);
-    mxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_LB, mrelaxinfo.relaxlb);
+    bxAddField(relaxInfo, COPTMEX_FEASRELAX_LB);
+    bxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_LB, mrelaxinfo.relaxlb);
     // 'relaxub'
-    mxAddField(relaxInfo, COPTMEX_FEASRELAX_UB);
-    mxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_UB, mrelaxinfo.relaxub);
+    bxAddField(relaxInfo, COPTMEX_FEASRELAX_UB);
+    bxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_UB, mrelaxinfo.relaxub);
   }
 
   if (nRow > 0) {
     // 'relaxlhs'
-    mxAddField(relaxInfo, COPTMEX_FEASRELAX_LHS);
-    mxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_LHS, mrelaxinfo.relaxlhs);
+    bxAddField(relaxInfo, COPTMEX_FEASRELAX_LHS);
+    bxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_LHS, mrelaxinfo.relaxlhs);
     // 'relaxrhs'
-    mxAddField(relaxInfo, COPTMEX_FEASRELAX_RHS);
-    mxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_RHS, mrelaxinfo.relaxrhs);
+    bxAddField(relaxInfo, COPTMEX_FEASRELAX_RHS);
+    bxSetField(relaxInfo, 0, COPTMEX_FEASRELAX_RHS, mrelaxinfo.relaxrhs);
   }
 
   // Write out feasibility relaxation problem
@@ -2533,13 +2533,13 @@ exit_cleanup:
   return retcode;
 }
 
-int COPTMEX_feasRelax(copt_prob *prob, const mxArray *penalty, mxArray **out_relax, int ifRetResult) {
+int COPTMEX_feasRelax(copt_prob *prob, const bxArray *penalty, bxArray **out_relax, int ifRetResult) {
   int retcode = COPT_RETCODE_OK;
 
-  mxArray *lbpen = NULL;
-  mxArray *ubpen = NULL;
-  mxArray *rhspen = NULL;
-  mxArray *upppen = NULL;
+  bxArray *lbpen = NULL;
+  bxArray *ubpen = NULL;
+  bxArray *rhspen = NULL;
+  bxArray *upppen = NULL;
 
   double *colLowPen = NULL;
   double *colUppPen = NULL;
@@ -2550,22 +2550,22 @@ int COPTMEX_feasRelax(copt_prob *prob, const mxArray *penalty, mxArray **out_rel
     goto exit_cleanup;
   }
 
-  lbpen = mxGetField(penalty, 0, COPTMEX_PENALTY_LBPEN);
-  ubpen = mxGetField(penalty, 0, COPTMEX_PENALTY_UBPEN);
-  rhspen = mxGetField(penalty, 0, COPTMEX_PENALTY_RHSPEN);
-  upppen = mxGetField(penalty, 0, COPTMEX_PENALTY_UPPPEN);
+  lbpen = bxGetField(penalty, 0, COPTMEX_PENALTY_LBPEN);
+  ubpen = bxGetField(penalty, 0, COPTMEX_PENALTY_UBPEN);
+  rhspen = bxGetField(penalty, 0, COPTMEX_PENALTY_RHSPEN);
+  upppen = bxGetField(penalty, 0, COPTMEX_PENALTY_UPPPEN);
 
   if (lbpen != NULL) {
-    colLowPen = mxGetDoubles(lbpen);
+    colLowPen = bxGetDoubles(lbpen);
   }
   if (ubpen != NULL) {
-    colUppPen = mxGetDoubles(ubpen);
+    colUppPen = bxGetDoubles(ubpen);
   }
   if (rhspen != NULL) {
-    rowBndPen = mxGetDoubles(rhspen);
+    rowBndPen = bxGetDoubles(rhspen);
   }
   if (upppen != NULL) {
-    rowUppPen = mxGetDoubles(upppen);
+    rowUppPen = bxGetDoubles(upppen);
   }
 
   // Compute the feasibility relaxation

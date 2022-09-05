@@ -7,7 +7,7 @@ void COPT_CALL COPTMEX_printLog(char* msg, void* userdata) {
   }
 }
 
-void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
+void mexFunction(int nlhs, bxArray* plhs[], int nrhs, const bxArray* prhs[]) {
   int retcode = COPT_RETCODE_OK;
   copt_env* env = NULL;
   copt_prob* prob = NULL;
@@ -23,16 +23,16 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) {
   }
 
   if (nrhs == 2 || nrhs == 3) {
-    if (!mxIsStruct(prhs[0])) {
+    if (!bxIsStruct(prhs[0])) {
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "problem");
       goto exit_cleanup;
     }
-    if (!mxIsStruct(prhs[1])) {
+    if (!bxIsStruct(prhs[1])) {
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "penalties");
       goto exit_cleanup;
     }
     if (nrhs == 3) {
-      if (!mxIsStruct(prhs[2])) {
+      if (!bxIsStruct(prhs[2])) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "parameter");
         goto exit_cleanup;
       }

@@ -165,9 +165,9 @@
 #define COPTMEX_ERROR_BAD_API      4
 
 typedef struct coptmex_mversion_s {
-  mxArray *major;
-  mxArray *minor;
-  mxArray *technical;
+  bxArray *major;
+  bxArray *minor;
+  bxArray *technical;
 } coptmex_mversion;
 
 typedef struct coptmex_cprob_s {
@@ -227,44 +227,44 @@ typedef struct coptmex_cprob_s {
 
 typedef struct coptmex_mprob_s {
   /* The main part of model */
-  mxArray *objsen;
-  mxArray *objcon;
-  mxArray *A;
-  mxArray *obj;
-  mxArray *lb;
-  mxArray *ub;
-  mxArray *vtype;
-  mxArray *varnames;
-  mxArray *sense;
-  mxArray *lhs;
-  mxArray *rhs;
-  mxArray *constrnames;
+  bxArray *objsen;
+  bxArray *objcon;
+  bxArray *A;
+  bxArray *obj;
+  bxArray *lb;
+  bxArray *ub;
+  bxArray *vtype;
+  bxArray *varnames;
+  bxArray *sense;
+  bxArray *lhs;
+  bxArray *rhs;
+  bxArray *constrnames;
 
   /* The optional sos part of model */
-  mxArray *sos;
+  bxArray *sos;
 
   /* The optional indicator part of model */
-  mxArray *indicator;
+  bxArray *indicator;
 
   /* The optional cone part of model */
-  mxArray *cone;
+  bxArray *cone;
 
   /* The optional Q objective part of model */
-  mxArray *qobj;
+  bxArray *qobj;
 
   /* The optional quadratic constraint part of model */
-  mxArray *quadcon;
+  bxArray *quadcon;
 
   /* The optional advanced information */
-  mxArray *varbasis;
-  mxArray *constrbasis;
+  bxArray *varbasis;
+  bxArray *constrbasis;
 
-  mxArray *value;
-  mxArray *slack;
-  mxArray *dual;
-  mxArray *redcost;
+  bxArray *value;
+  bxArray *slack;
+  bxArray *dual;
+  bxArray *redcost;
 
-  mxArray *mipstart;
+  bxArray *mipstart;
 } coptmex_mprob;
 
 typedef struct coptmex_cconeprob_s {
@@ -301,21 +301,21 @@ typedef struct coptmex_cconeprob_s {
 
 typedef struct coptmex_mconeprob_s {
   /* Main cone data */
-  mxArray *c;
-  mxArray *A;
-  mxArray *b;
+  bxArray *c;
+  bxArray *A;
+  bxArray *b;
 
-  mxArray *K;
-  mxArray *f;
-  mxArray *l;
-  mxArray *q;
-  mxArray *r;
-  mxArray *s;
+  bxArray *K;
+  bxArray *f;
+  bxArray *l;
+  bxArray *q;
+  bxArray *r;
+  bxArray *s;
 
   /* Optional parts */
-  mxArray *objsen;
-  mxArray *objcon;
-  mxArray *Q;
+  bxArray *objsen;
+  bxArray *objcon;
+  bxArray *Q;
 } coptmex_mconeprob;
 
 typedef struct coptmex_clpsol_s {
@@ -388,55 +388,55 @@ typedef struct coptmex_crelaxinfo_s {
 } coptmex_crelaxinfo;
 
 typedef struct coptmex_mlpsol_s {
-  mxArray *status;
-  mxArray *simplexiter;
-  mxArray *barrieriter;
-  mxArray *solvingtime;
-  mxArray *objval;
-  mxArray *varbasis;
-  mxArray *constrbasis;
-  mxArray *value;
-  mxArray *redcost;
-  mxArray *slack;
-  mxArray *dual;
-  mxArray *ray;
-  mxArray *farkas;
-  mxArray *qcslack;
-  mxArray *psdcolvalue;
-  mxArray *psdcoldual;
-  mxArray *psdrowslack;
-  mxArray *psdrowdual;
+  bxArray *status;
+  bxArray *simplexiter;
+  bxArray *barrieriter;
+  bxArray *solvingtime;
+  bxArray *objval;
+  bxArray *varbasis;
+  bxArray *constrbasis;
+  bxArray *value;
+  bxArray *redcost;
+  bxArray *slack;
+  bxArray *dual;
+  bxArray *ray;
+  bxArray *farkas;
+  bxArray *qcslack;
+  bxArray *psdcolvalue;
+  bxArray *psdcoldual;
+  bxArray *psdrowslack;
+  bxArray *psdrowdual;
 } coptmex_mlpsol;
 
 typedef struct coptmex_mmipsol_s {
-  mxArray *status;
-  mxArray *simplexiter;
-  mxArray *nodecnt;
-  mxArray *bestgap;
-  mxArray *solvingtime;
-  mxArray *objval;
-  mxArray *bestbnd;
-  mxArray *value;
+  bxArray *status;
+  bxArray *simplexiter;
+  bxArray *nodecnt;
+  bxArray *bestgap;
+  bxArray *solvingtime;
+  bxArray *objval;
+  bxArray *bestbnd;
+  bxArray *value;
 
-  mxArray *solpool;
+  bxArray *solpool;
 } coptmex_mmipsol;
 
 typedef struct coptmex_miisinfo_s {
-  mxArray *isminiis;
-  mxArray *varlb;
-  mxArray *varub;
-  mxArray *constrlb;
-  mxArray *construb;
-  mxArray *sos;
-  mxArray *indicator;
+  bxArray *isminiis;
+  bxArray *varlb;
+  bxArray *varub;
+  bxArray *constrlb;
+  bxArray *construb;
+  bxArray *sos;
+  bxArray *indicator;
 } coptmex_miisinfo;
 
 typedef struct coptmex_mrelaxinfo_s {
-  mxArray *relaxobj;
-  mxArray *relaxlb;
-  mxArray *relaxub;
-  mxArray *relaxlhs;
-  mxArray *relaxrhs;
+  bxArray *relaxobj;
+  bxArray *relaxlb;
+  bxArray *relaxub;
+  bxArray *relaxlhs;
+  bxArray *relaxrhs;
 } coptmex_mrelaxinfo;
 
 /* Display error message */
@@ -445,34 +445,34 @@ void COPTMEX_errorMsg(int errcode, const char *errinfo);
 int COPTMEX_dispBanner(void);
 
 /* Extract version of COPT */
-int COPTMEX_getVersion(mxArray **out_version);
+int COPTMEX_getVersion(bxArray **out_version);
 /* Extract objective sense */
-int COPTMEX_getObjsen(const mxArray *in_objsen, int *out_objsen);
+int COPTMEX_getObjsen(const bxArray *in_objsen, int *out_objsen);
 /* Extract and save result */
-int COPTMEX_getResult(copt_prob *prob, mxArray **out_result);
+int COPTMEX_getResult(copt_prob *prob, bxArray **out_result);
 /* Extract model data */
-int COPTMEX_getModel(copt_prob *prob, int nfiles, const mxArray **in_files, mxArray **out_model);
+int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files, bxArray **out_model);
 
 /* Load parameters to problem */
-int COPTMEX_setParam(copt_prob *prob, const mxArray *in_param);
+int COPTMEX_setParam(copt_prob *prob, const bxArray *in_param);
 /* Read optional information from file */
-int COPTMEX_readInfo(copt_prob *prob, const mxArray *in_info);
+int COPTMEX_readInfo(copt_prob *prob, const bxArray *in_info);
 /* Read model from file */
-int COPTMEX_readModel(copt_prob *prob, const mxArray *in_model);
+int COPTMEX_readModel(copt_prob *prob, const bxArray *in_model);
 /* Write model to file */
-int COPTMEX_writeModel(copt_prob *prob, const mxArray *out_file);
+int COPTMEX_writeModel(copt_prob *prob, const bxArray *out_file);
 /* Extract and load data to model */
-int COPTMEX_loadModel(copt_prob *prob, const mxArray *in_model);
+int COPTMEX_loadModel(copt_prob *prob, const bxArray *in_model);
 
 /* Check if solve problem via cone data */
-int COPTMEX_isConeModel(const mxArray *in_model);
+int COPTMEX_isConeModel(const bxArray *in_model);
 /* Solve cone problem with cone data */
-int COPTMEX_solveConeModel(copt_prob *prob, const mxArray *in_model, mxArray **out_result, int ifRetResult);
+int COPTMEX_solveConeModel(copt_prob *prob, const bxArray *in_model, bxArray **out_result, int ifRetResult);
 
 /* Compute IIS for infeasible problem */
-int COPTMEX_computeIIS(copt_prob *prob, mxArray **out_iis, int ifRetResult);
+int COPTMEX_computeIIS(copt_prob *prob, bxArray **out_iis, int ifRetResult);
 
 /* Feasibility relaxation for infeasible problem */
-int COPTMEX_feasRelax(copt_prob *prob, const mxArray *penalty, mxArray **out_relax, int ifRetResult);
+int COPTMEX_feasRelax(copt_prob *prob, const bxArray *penalty, bxArray **out_relax, int ifRetResult);
 
 #endif

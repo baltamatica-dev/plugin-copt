@@ -7,7 +7,7 @@ void COPT_CALL COPTMEX_printLog(char *msg, void *userdata) {
   }
 }
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+void mexFunction(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
   int retcode = COPT_RETCODE_OK;
   copt_env *env = NULL;
   copt_prob *prob = NULL;
@@ -23,12 +23,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   if (nrhs == 1 || nrhs == 2) {
-    if (!mxIsChar(prhs[0]) && !mxIsStruct(prhs[0])) {
+    if (!bxIsChar(prhs[0]) && !bxIsStruct(prhs[0])) {
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "problem/probfile");
       goto exit_cleanup;
     }
     if (nrhs == 2) {
-      if (!mxIsStruct(prhs[1])) {
+      if (!bxIsStruct(prhs[1])) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "parameter");
         goto exit_cleanup;
       }
@@ -56,10 +56,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   // Processing the first argument
   //  1. 'string': a valid problem file;
   //  2. 'struct': a struct that specify the problem data.
-  if (mxIsChar(prhs[0])) {
+  if (bxIsChar(prhs[0])) {
     // Read the problem from file
     COPTMEX_CALL(COPTMEX_readModel(prob, prhs[0]));
-  } else if (mxIsStruct(prhs[0])) {
+  } else if (bxIsStruct(prhs[0])) {
     // Extract and load data to problem
     COPTMEX_CALL(COPTMEX_loadModel(prob, prhs[0]));
   }

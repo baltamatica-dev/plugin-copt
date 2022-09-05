@@ -298,33 +298,33 @@ static void COPTMEX_initMRelaxInfo(coptmex_mrelaxinfo *mrelaxinfo) {
 }
 
 /* Check parts of penalty */
-static int COPTMEX_checkPenalty(copt_prob *prob, const mxArray *penalty) {
+static int COPTMEX_checkPenalty(copt_prob *prob, const bxArray *penalty) {
   int isvalid = 1;
   char msgbuf[COPT_BUFFSIZE];
 
-  mxArray *lbpen = NULL;
-  mxArray *ubpen = NULL;
-  mxArray *rhspen = NULL;
-  mxArray *upppen = NULL;
+  bxArray *lbpen = NULL;
+  bxArray *ubpen = NULL;
+  bxArray *rhspen = NULL;
+  bxArray *upppen = NULL;
 
   int nCol = 0, nRow = 0;
 
   COPT_GetIntAttr(prob, COPT_INTATTR_COLS, &nCol);
   COPT_GetIntAttr(prob, COPT_INTATTR_ROWS, &nRow);
 
-  lbpen = mxGetField(penalty, 0, COPTMEX_PENALTY_LBPEN);
-  ubpen = mxGetField(penalty, 0, COPTMEX_PENALTY_UBPEN);
-  rhspen = mxGetField(penalty, 0, COPTMEX_PENALTY_RHSPEN);
-  upppen = mxGetField(penalty, 0, COPTMEX_PENALTY_UPPPEN);
+  lbpen = bxGetField(penalty, 0, COPTMEX_PENALTY_LBPEN);
+  ubpen = bxGetField(penalty, 0, COPTMEX_PENALTY_UBPEN);
+  rhspen = bxGetField(penalty, 0, COPTMEX_PENALTY_RHSPEN);
+  upppen = bxGetField(penalty, 0, COPTMEX_PENALTY_UPPPEN);
 
   if (lbpen != NULL) {
-    if (!mxIsDouble(lbpen)) {
+    if (!bxIsDouble(lbpen)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_LBPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(lbpen) != nCol) {
+    if (bxGetNumberOfElements(lbpen) != nCol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_LBPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -333,13 +333,13 @@ static int COPTMEX_checkPenalty(copt_prob *prob, const mxArray *penalty) {
   }
 
   if (ubpen != NULL) {
-    if (!mxIsDouble(ubpen)) {
+    if (!bxIsDouble(ubpen)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_UBPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(ubpen) != nCol) {
+    if (bxGetNumberOfElements(ubpen) != nCol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_UBPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -348,13 +348,13 @@ static int COPTMEX_checkPenalty(copt_prob *prob, const mxArray *penalty) {
   }
 
   if (rhspen != NULL) {
-    if (!mxIsDouble(rhspen)) {
+    if (!bxIsDouble(rhspen)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_RHSPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(rhspen) != nRow) {
+    if (bxGetNumberOfElements(rhspen) != nRow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_RHSPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -363,13 +363,13 @@ static int COPTMEX_checkPenalty(copt_prob *prob, const mxArray *penalty) {
   }
 
   if (upppen != NULL) {
-    if (!mxIsDouble(upppen)) {
+    if (!bxIsDouble(upppen)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_UPPPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(upppen) != nRow) {
+    if (bxGetNumberOfElements(upppen) != nRow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "penalty.%s", COPTMEX_PENALTY_UPPPEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -382,14 +382,14 @@ exit_cleanup:
 }
 
 /* Check all parts of a cone problem */
-static int COPTMEX_checkConeModel(mxArray *conedata) {
+static int COPTMEX_checkConeModel(bxArray *conedata) {
   int nrow = 0, ncol = 0;
   int isvalid = 1;
   char msgbuf[COPT_BUFFSIZE];
 
   // 'conedata'
   if (conedata != NULL) {
-    if (!mxIsStruct(conedata)) {
+    if (!bxIsStruct(conedata)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONEDATA);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -397,33 +397,33 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'A'
-    mxArray *A = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_A);
+    bxArray *A = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_A);
     if (A == NULL) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_A);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
       goto exit_cleanup;
     } else {
-      if (!mxIsSparse(A)) {
+      if (!bxIsSparse(A)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_A);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
         goto exit_cleanup;
       } else {
-        nrow = (int) mxGetM(A);
-        ncol = (int) mxGetN(A);
+        nrow = (int) bxGetM(A);
+        ncol = (int) bxGetN(A);
       }
     }
 
     // 'K'
-    mxArray *K = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_K);
+    bxArray *K = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_K);
     if (K == NULL) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_K);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
       goto exit_cleanup;
     } else {
-      if (!mxIsStruct(K)) {
+      if (!bxIsStruct(K)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_K);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -432,9 +432,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'f'
-    mxArray *f = mxGetField(conedata, 0, COPTMEX_MODEL_CONEK_F);
+    bxArray *f = bxGetField(conedata, 0, COPTMEX_MODEL_CONEK_F);
     if (f != NULL) {
-      if (!mxIsScalar(f) || mxIsChar(f)) {
+      if (!bxIsScalar(f) || bxIsChar(f)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONEK_F);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -443,9 +443,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'l'
-    mxArray *l = mxGetField(conedata, 0, COPTMEX_MODEL_CONEK_L);
+    bxArray *l = bxGetField(conedata, 0, COPTMEX_MODEL_CONEK_L);
     if (l != NULL) {
-      if (!mxIsScalar(l) || mxIsChar(l)) {
+      if (!bxIsScalar(l) || bxIsChar(l)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONEK_L);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -454,9 +454,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'q'
-    mxArray *q = mxGetField(conedata, 0, COPTMEX_MODEL_CONEK_Q);
+    bxArray *q = bxGetField(conedata, 0, COPTMEX_MODEL_CONEK_Q);
     if (q != NULL) {
-      if (!mxIsDouble(q)) {
+      if (!bxIsDouble(q)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONEK_Q);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -465,9 +465,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'r'
-    mxArray *r = mxGetField(conedata, 0, COPTMEX_MODEL_CONEK_R);
+    bxArray *r = bxGetField(conedata, 0, COPTMEX_MODEL_CONEK_R);
     if (r != NULL) {
-      if (!mxIsDouble(r)) {
+      if (!bxIsDouble(r)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONEK_R);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -476,9 +476,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 's'
-    mxArray *s = mxGetField(conedata, 0, COPTMEX_MODEL_CONEK_S);
+    bxArray *s = bxGetField(conedata, 0, COPTMEX_MODEL_CONEK_S);
     if (s != NULL) {
-      if (!mxIsDouble(s)) {
+      if (!bxIsDouble(s)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONEK_S);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -487,15 +487,15 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'c'
-    mxArray *c = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_C);
+    bxArray *c = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_C);
     if (c != NULL) {
-      if (!mxIsDouble(c)) {
+      if (!bxIsDouble(c)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_C);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
         goto exit_cleanup;
       } else {
-        if (mxGetNumberOfElements(c) != ncol) {
+        if (bxGetNumberOfElements(c) != ncol) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_C);
           COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -505,15 +505,15 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'b'
-    mxArray *b = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_B);
+    bxArray *b = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_B);
     if (b != NULL) {
-      if (!mxIsDouble(b)) {
+      if (!bxIsDouble(b)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_B);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
         goto exit_cleanup;
       } else {
-        if (mxGetNumberOfElements(b) != nrow) {
+        if (bxGetNumberOfElements(b) != nrow) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.conedata.%s", COPTMEX_MODEL_CONE_B);
           COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -523,9 +523,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'objsen'
-    mxArray *objsen = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJSEN);
+    bxArray *objsen = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJSEN);
     if (objsen != NULL) {
-      if (!mxIsChar(objsen)) {
+      if (!bxIsChar(objsen)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONE_OBJSEN);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -534,9 +534,9 @@ static int COPTMEX_checkConeModel(mxArray *conedata) {
     }
 
     // 'objcon'
-    mxArray *objcon = mxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJCON);
+    bxArray *objcon = bxGetField(conedata, 0, COPTMEX_MODEL_CONE_OBJCON);
     if (objcon != NULL) {
-      if (!mxIsScalar(objcon) || mxIsChar(objcon)) {
+      if (!bxIsScalar(objcon) || bxIsChar(objcon)) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONE_OBJCON);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -557,7 +557,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'objsen'
   if (mprob->objsen != NULL) {
-    if (!mxIsChar(mprob->objsen)) {
+    if (!bxIsChar(mprob->objsen)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_OBJSEN);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -566,7 +566,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'objcon'
   if (mprob->objcon != NULL) {
-    if (!mxIsScalar(mprob->objcon) || mxIsChar(mprob->objcon)) {
+    if (!bxIsScalar(mprob->objcon) || bxIsChar(mprob->objcon)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_OBJCON);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
@@ -580,25 +580,25 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
     COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
     goto exit_cleanup;
   } else {
-    if (!mxIsSparse(mprob->A)) {
+    if (!bxIsSparse(mprob->A)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_A);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     } else {
-      nrow = (int) mxGetM(mprob->A);
-      ncol = (int) mxGetN(mprob->A);
+      nrow = (int) bxGetM(mprob->A);
+      ncol = (int) bxGetN(mprob->A);
     }
   }
   // 'obj'
   if (mprob->obj != NULL) {
-    if (!mxIsDouble(mprob->obj)) {
+    if (!bxIsDouble(mprob->obj)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_OBJ);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->obj) != ncol) {
+    if (bxGetNumberOfElements(mprob->obj) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_OBJ);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -607,13 +607,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'lb'
   if (mprob->lb != NULL) {
-    if (!mxIsDouble(mprob->lb)) {
+    if (!bxIsDouble(mprob->lb)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_LB);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->lb) != ncol) {
+    if (bxGetNumberOfElements(mprob->lb) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_LB);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -622,13 +622,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'ub'
   if (mprob->ub != NULL) {
-    if (!mxIsDouble(mprob->ub)) {
+    if (!bxIsDouble(mprob->ub)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_UB);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->ub) != ncol) {
+    if (bxGetNumberOfElements(mprob->ub) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_UB);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -637,14 +637,14 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'vtype'
   if (mprob->vtype != NULL) {
-    if (!mxIsChar(mprob->vtype)) {
+    if (!bxIsChar(mprob->vtype)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_VTYPE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->vtype) != ncol &&
-        mxGetNumberOfElements(mprob->vtype) != 1) {
+    if (bxGetNumberOfElements(mprob->vtype) != ncol &&
+        bxGetNumberOfElements(mprob->vtype) != 1) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_VTYPE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -654,13 +654,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   // 'sense'
   if (mprob->sense == NULL) {
     // 'lhs'
-    if (!mxIsDouble(mprob->lhs)) {
+    if (!bxIsDouble(mprob->lhs)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_LHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->lhs) != nrow) {
+    if (bxGetNumberOfElements(mprob->lhs) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_LHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -668,13 +668,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
     }
 
     // 'rhs'
-    if (!mxIsDouble(mprob->rhs)) {
+    if (!bxIsDouble(mprob->rhs)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_RHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->rhs) != nrow) {
+    if (bxGetNumberOfElements(mprob->rhs) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_RHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -682,14 +682,14 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
     }
   } else {
     // 'sense'
-    if (!mxIsChar(mprob->sense)) {
+    if (!bxIsChar(mprob->sense)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_SENSE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->sense) != nrow &&
-        mxGetNumberOfElements(mprob->sense) != 1) {
+    if (bxGetNumberOfElements(mprob->sense) != nrow &&
+        bxGetNumberOfElements(mprob->sense) != 1) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_SENSE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -697,13 +697,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
     }
 
     // 'rhs'
-    if (!mxIsDouble(mprob->rhs)) {
+    if (!bxIsDouble(mprob->rhs)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_RHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->rhs) != nrow) {
+    if (bxGetNumberOfElements(mprob->rhs) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_RHS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -712,21 +712,21 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'varnames'
   if (mprob->varnames != NULL) {
-    if (!mxIsCell(mprob->varnames)) {
+    if (!bxIsCell(mprob->varnames)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_VARNAME);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->varnames) != ncol) {
+    if (bxGetNumberOfElements(mprob->varnames) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_VARNAME);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->varnames); ++i) {
-      if (!mxIsChar(mxGetCell(mprob->varnames, i))) {
+    for (int i = 0; i < bxGetNumberOfElements(mprob->varnames); ++i) {
+      if (!bxIsChar(bxGetCell(mprob->varnames, i))) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s{%d}", COPTMEX_MODEL_VARNAME, i);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
@@ -736,21 +736,21 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'constrnames'
   if (mprob->constrnames != NULL) {
-    if (!mxIsCell(mprob->constrnames)) {
+    if (!bxIsCell(mprob->constrnames)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONNAME);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->constrnames) != nrow) {
+    if (bxGetNumberOfElements(mprob->constrnames) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONNAME);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->constrnames); ++i) {
-      if (!mxIsChar(mxGetCell(mprob->constrnames, i))) {
+    for (int i = 0; i < bxGetNumberOfElements(mprob->constrnames); ++i) {
+      if (!bxIsChar(bxGetCell(mprob->constrnames, i))) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s{%d}", COPTMEX_MODEL_CONNAME, i);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
@@ -761,17 +761,17 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'sos'
   if (mprob->sos != NULL) {
-    if (!mxIsStruct(mprob->sos)) {
+    if (!bxIsStruct(mprob->sos)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_SOS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->sos); ++i) {
-      mxArray *sostype = mxGetField(mprob->sos, i, COPTMEX_MODEL_SOSTYPE);
-      mxArray *sosvars = mxGetField(mprob->sos, i, COPTMEX_MODEL_SOSVARS);
-      mxArray *soswght = mxGetField(mprob->sos, i, COPTMEX_MODEL_SOSWEIGHT);
+    for (int i = 0; i < bxGetNumberOfElements(mprob->sos); ++i) {
+      bxArray *sostype = bxGetField(mprob->sos, i, COPTMEX_MODEL_SOSTYPE);
+      bxArray *sosvars = bxGetField(mprob->sos, i, COPTMEX_MODEL_SOSVARS);
+      bxArray *soswght = bxGetField(mprob->sos, i, COPTMEX_MODEL_SOSWEIGHT);
 
       if (sostype == NULL) {
         isvalid = 0;
@@ -780,7 +780,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsScalar(sostype) || mxIsChar(sostype)) {
+        if (!bxIsScalar(sostype) || bxIsChar(sostype)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_SOS,
                    i, COPTMEX_MODEL_SOSTYPE);
@@ -796,7 +796,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsDouble(sosvars) || mxIsScalar(sosvars) || mxIsSparse(sosvars)) {
+        if (!bxIsDouble(sosvars) || bxIsScalar(sosvars) || bxIsSparse(sosvars)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_SOS,
                    i, COPTMEX_MODEL_SOSVARS);
@@ -806,7 +806,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
       }
 
       if (soswght != NULL) {
-        if (!mxIsDouble(soswght) || mxIsScalar(soswght) || mxIsSparse(soswght)) {
+        if (!bxIsDouble(soswght) || bxIsScalar(soswght) || bxIsSparse(soswght)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_SOS,
                    i, COPTMEX_MODEL_SOSWEIGHT);
@@ -814,7 +814,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
           goto exit_cleanup;
         }
 
-        if (mxGetNumberOfElements(sosvars) != mxGetNumberOfElements(soswght)) {
+        if (bxGetNumberOfElements(sosvars) != bxGetNumberOfElements(soswght)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s and problem.%s(%d).%s",
                    COPTMEX_MODEL_SOS, i, COPTMEX_MODEL_SOSVARS,
@@ -828,19 +828,19 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'indicator'
   if (mprob->indicator != NULL) {
-    if (!mxIsStruct(mprob->indicator)) {
+    if (!bxIsStruct(mprob->indicator)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_INDICATOR);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->indicator); ++i) {
-      mxArray *binvar = mxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICBINVAR);
-      mxArray *binval = mxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICBINVAL);
-      mxArray *indicA = mxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICROW);
-      mxArray *rSense = mxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICSENSE);
-      mxArray *rowBnd = mxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICRHS);
+    for (int i = 0; i < bxGetNumberOfElements(mprob->indicator); ++i) {
+      bxArray *binvar = bxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICBINVAR);
+      bxArray *binval = bxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICBINVAL);
+      bxArray *indicA = bxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICROW);
+      bxArray *rSense = bxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICSENSE);
+      bxArray *rowBnd = bxGetField(mprob->indicator, i, COPTMEX_MODEL_INDICRHS);
 
       if (binvar == NULL) {
         isvalid = 0;
@@ -849,7 +849,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsScalar(binvar) || mxIsChar(binvar)) {
+        if (!bxIsScalar(binvar) || bxIsChar(binvar)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                    i, COPTMEX_MODEL_INDICBINVAR);
@@ -865,7 +865,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsScalar(binval) || mxIsChar(binval)) {
+        if (!bxIsScalar(binval) || bxIsChar(binval)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                    i, COPTMEX_MODEL_INDICBINVAL);
@@ -881,15 +881,15 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsDouble(indicA)) {
+        if (!bxIsDouble(indicA)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                    i, COPTMEX_MODEL_INDICROW);
           COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
           goto exit_cleanup;
         }
-        if (!mxIsSparse(indicA)) {
-          if (mxGetNumberOfElements(indicA) != ncol) {
+        if (!bxIsSparse(indicA)) {
+          if (bxGetNumberOfElements(indicA) != ncol) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                      i, COPTMEX_MODEL_INDICROW);
@@ -897,7 +897,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
             goto exit_cleanup;
           }
         } else {
-          if (mxGetN(indicA) != 1) {
+          if (bxGetN(indicA) != 1) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                      i, COPTMEX_MODEL_INDICROW);
@@ -914,7 +914,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsChar(rSense) || !mxIsScalar(rSense)) {
+        if (!bxIsChar(rSense) || !bxIsScalar(rSense)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                    i, COPTMEX_MODEL_INDICSENSE);
@@ -930,7 +930,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsScalar(rowBnd) || mxIsChar(rowBnd)) {
+        if (!bxIsScalar(rowBnd) || bxIsChar(rowBnd)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_INDICATOR,
                    i, COPTMEX_MODEL_INDICRHS);
@@ -943,16 +943,16 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'cone'
   if (mprob->cone != NULL) {
-    if (!mxIsStruct(mprob->cone)) {
+    if (!bxIsStruct(mprob->cone)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_CONE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->cone); ++i) {
-      mxArray *conetype = mxGetField(mprob->cone, i, COPTMEX_MODEL_CONETYPE);
-      mxArray *conevars = mxGetField(mprob->cone, i, COPTMEX_MODEL_CONEVARS);
+    for (int i = 0; i < bxGetNumberOfElements(mprob->cone); ++i) {
+      bxArray *conetype = bxGetField(mprob->cone, i, COPTMEX_MODEL_CONETYPE);
+      bxArray *conevars = bxGetField(mprob->cone, i, COPTMEX_MODEL_CONEVARS);
 
       if (conetype == NULL) {
         isvalid = 0;
@@ -961,7 +961,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsScalar(conetype) || mxIsChar(conetype)) {
+        if (!bxIsScalar(conetype) || bxIsChar(conetype)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_CONE,
                    i, COPTMEX_MODEL_CONETYPE);
@@ -977,7 +977,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (!mxIsDouble(conevars) || mxIsScalar(conevars) || mxIsSparse(conevars)) {
+        if (!bxIsDouble(conevars) || bxIsScalar(conevars) || bxIsSparse(conevars)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_CONE,
                    i, COPTMEX_MODEL_CONEVARS);
@@ -990,13 +990,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'Q'
   if (mprob->qobj != NULL) {
-    if (!mxIsSparse(mprob->qobj)) {
+    if (!bxIsSparse(mprob->qobj)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_QUADOBJ);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetM(mprob->qobj) != ncol || mxGetN(mprob->qobj) != ncol) {
+    if (bxGetM(mprob->qobj) != ncol || bxGetN(mprob->qobj) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_QUADOBJ);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1006,32 +1006,32 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'quadcon'
   if (mprob->quadcon != NULL) {
-    if (!mxIsStruct(mprob->quadcon)) {
+    if (!bxIsStruct(mprob->quadcon)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_MODEL_QUADCON);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
 
-    for (int i = 0; i < mxGetNumberOfElements(mprob->quadcon); ++i) {
-      mxArray *QcMat = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCSPMAT);
-      mxArray *QcRow = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCROW);
-      mxArray *QcCol = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCCOL);
-      mxArray *QcVal = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCVAL);
-      mxArray *QcLinear = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCLINEAR);
-      mxArray *QcSense = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCSENSE);
-      mxArray *QcRhs = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCRHS);
-      mxArray *QcName = mxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCNAME);
+    for (int i = 0; i < bxGetNumberOfElements(mprob->quadcon); ++i) {
+      bxArray *QcMat = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCSPMAT);
+      bxArray *QcRow = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCROW);
+      bxArray *QcCol = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCCOL);
+      bxArray *QcVal = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCVAL);
+      bxArray *QcLinear = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCLINEAR);
+      bxArray *QcSense = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCSENSE);
+      bxArray *QcRhs = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCRHS);
+      bxArray *QcName = bxGetField(mprob->quadcon, i, COPTMEX_MODEL_QCNAME);
 
       if (QcMat != NULL) {
-        if (!mxIsSparse(QcMat)) {
+        if (!bxIsSparse(QcMat)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCSPMAT);
           COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
           goto exit_cleanup;
         }
-        if (mxGetM(QcMat) != mxGetN(QcMat)) {
+        if (bxGetM(QcMat) != bxGetN(QcMat)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCSPMAT);
@@ -1040,28 +1040,28 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         }
       } else {
         if (QcRow != NULL && QcCol != NULL && QcVal != NULL) {
-          if (!mxIsDouble(QcRow)) {
+          if (!bxIsDouble(QcRow)) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                      i, COPTMEX_MODEL_QCROW);
             COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
             goto exit_cleanup;
           }
-          if (!mxIsDouble(QcCol)) {
+          if (!bxIsDouble(QcCol)) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                      i, COPTMEX_MODEL_QCCOL);
             COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
             goto exit_cleanup;
           }
-          if (!mxIsDouble(QcVal)) {
+          if (!bxIsDouble(QcVal)) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                      i, COPTMEX_MODEL_QCVAL);
             COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
             goto exit_cleanup;
           }
-          if (mxGetNumberOfElements(QcRow) != mxGetNumberOfElements(QcCol)) {
+          if (bxGetNumberOfElements(QcRow) != bxGetNumberOfElements(QcCol)) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                      i, COPTMEX_MODEL_QCROW);
@@ -1071,7 +1071,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
             COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
             goto exit_cleanup;
           }
-          if (mxGetNumberOfElements(QcRow) != mxGetNumberOfElements(QcVal)) {
+          if (bxGetNumberOfElements(QcRow) != bxGetNumberOfElements(QcVal)) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                      i, COPTMEX_MODEL_QCVAL);
@@ -1082,15 +1082,15 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
       }
 
       if (QcLinear != NULL) {
-        if (!mxIsDouble(QcLinear)) {
+        if (!bxIsDouble(QcLinear)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCLINEAR);
           COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
           goto exit_cleanup;
         }
-        if (!mxIsSparse(QcLinear)) {
-          if (mxGetNumberOfElements(QcLinear) != ncol) {
+        if (!bxIsSparse(QcLinear)) {
+          if (bxGetNumberOfElements(QcLinear) != ncol) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON,
                      i, COPTMEX_MODEL_QCLINEAR);
@@ -1098,7 +1098,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
             goto exit_cleanup;
           }
         } else {
-          if (mxGetN(QcLinear) != 1) {
+          if (bxGetN(QcLinear) != 1) {
             isvalid = 0;
             snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON,
                      i, COPTMEX_MODEL_QCLINEAR);
@@ -1116,7 +1116,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
       }
 
       if (QcSense != NULL) {
-        if (!mxIsChar(QcSense) || !mxIsScalar(QcSense)) {
+        if (!bxIsChar(QcSense) || !bxIsScalar(QcSense)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCSENSE);
@@ -1132,7 +1132,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);
         goto exit_cleanup;
       } else {
-        if (mxIsChar(QcRhs) || !mxIsScalar(QcRhs)) {
+        if (bxIsChar(QcRhs) || !bxIsScalar(QcRhs)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCRHS);
@@ -1142,7 +1142,7 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
       }
 
       if (QcName != NULL) {
-        if (!mxIsChar(QcName)) {
+        if (!bxIsChar(QcName)) {
           isvalid = 0;
           snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s(%d).%s", COPTMEX_MODEL_QUADCON, 
                    i, COPTMEX_MODEL_QCNAME);
@@ -1155,14 +1155,14 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
 
   // 'varbasis'
   if (mprob->varbasis != NULL) {
-    if (!mxIsDouble(mprob->varbasis) || mxIsScalar(mprob->varbasis) ||
-        mxIsSparse(mprob->varbasis)) {
+    if (!bxIsDouble(mprob->varbasis) || bxIsScalar(mprob->varbasis) ||
+        bxIsSparse(mprob->varbasis)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_VARBASIS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->varbasis) != ncol) {
+    if (bxGetNumberOfElements(mprob->varbasis) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_VARBASIS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1171,14 +1171,14 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'constrbasis'
   if (mprob->constrbasis != NULL) {
-    if (!mxIsDouble(mprob->constrbasis) || mxIsScalar(mprob->constrbasis) ||
-        mxIsSparse(mprob->constrbasis)) {
+    if (!bxIsDouble(mprob->constrbasis) || bxIsScalar(mprob->constrbasis) ||
+        bxIsSparse(mprob->constrbasis)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_CONBASIS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->constrbasis) != nrow) {
+    if (bxGetNumberOfElements(mprob->constrbasis) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_CONBASIS);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1187,13 +1187,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'x'
   if (mprob->value != NULL) {
-    if (!mxIsDouble(mprob->value) || mxIsScalar(mprob->value) || mxIsSparse(mprob->value)) {
+    if (!bxIsDouble(mprob->value) || bxIsScalar(mprob->value) || bxIsSparse(mprob->value)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_VALUE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->value) != ncol) {
+    if (bxGetNumberOfElements(mprob->value) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_VALUE);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1202,13 +1202,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'rc'
   if (mprob->redcost != NULL) {
-    if (!mxIsDouble(mprob->redcost) || mxIsScalar(mprob->redcost) || mxIsSparse(mprob->redcost)) {
+    if (!bxIsDouble(mprob->redcost) || bxIsScalar(mprob->redcost) || bxIsSparse(mprob->redcost)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_REDCOST);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->redcost) != ncol) {
+    if (bxGetNumberOfElements(mprob->redcost) != ncol) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_REDCOST);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1217,13 +1217,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'slack'
   if (mprob->slack != NULL) {
-    if (!mxIsDouble(mprob->slack) || mxIsScalar(mprob->slack) || mxIsSparse(mprob->slack)) {
+    if (!bxIsDouble(mprob->slack) || bxIsScalar(mprob->slack) || bxIsSparse(mprob->slack)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_SLACK);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->slack) != nrow) {
+    if (bxGetNumberOfElements(mprob->slack) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_SLACK);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1232,13 +1232,13 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'pi'
   if (mprob->dual != NULL) {
-    if (!mxIsDouble(mprob->dual) || mxIsScalar(mprob->dual) || mxIsSparse(mprob->dual)) {
+    if (!bxIsDouble(mprob->dual) || bxIsScalar(mprob->dual) || bxIsSparse(mprob->dual)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_DUAL);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (mxGetNumberOfElements(mprob->dual) != nrow) {
+    if (bxGetNumberOfElements(mprob->dual) != nrow) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_RESULT_DUAL);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
@@ -1247,21 +1247,21 @@ static int COPTMEX_checkModel(coptmex_mprob *mprob) {
   }
   // 'start'
   if (mprob->mipstart != NULL) {
-    if (!mxIsDouble(mprob->mipstart)) {
+    if (!bxIsDouble(mprob->mipstart)) {
       isvalid = 0;
       snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_ADVINFO_MIPSTART);
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, msgbuf);
       goto exit_cleanup;
     }
-    if (!mxIsSparse(mprob->mipstart)) {
-      if (mxGetNumberOfElements(mprob->mipstart) != ncol) {
+    if (!bxIsSparse(mprob->mipstart)) {
+      if (bxGetNumberOfElements(mprob->mipstart) != ncol) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_ADVINFO_MIPSTART);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_NUM, msgbuf);
         goto exit_cleanup;
       }
     } else {
-      if (mxGetN(mprob->mipstart) != 1) {
+      if (bxGetN(mprob->mipstart) != 1) {
         isvalid = 0;
         snprintf(msgbuf, COPT_BUFFSIZE, "problem.%s", COPTMEX_ADVINFO_MIPSTART);
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_DATA, msgbuf);

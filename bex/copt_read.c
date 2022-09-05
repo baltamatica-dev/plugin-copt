@@ -1,6 +1,6 @@
 #include "coptmex.h"
 
-void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+void mexFunction(int nlhs, bxArray *plhs[], int nrhs, const bxArray *prhs[]) {
   int retcode = COPT_RETCODE_OK;
   copt_env *env = NULL;
   copt_prob *prob = NULL;
@@ -12,12 +12,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   }
 
   if (nrhs == 1 || nrhs == 2) {
-    if (!mxIsChar(prhs[0])) {
+    if (!bxIsChar(prhs[0])) {
       COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "probfile");
       goto exit_cleanup;
     }
     if (nrhs == 2) {
-      if (!mxIsChar(prhs[1])) {
+      if (!bxIsChar(prhs[1])) {
         COPTMEX_errorMsg(COPTMEX_ERROR_BAD_TYPE, "infofile");
         goto exit_cleanup;
       }
