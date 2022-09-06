@@ -32,3 +32,15 @@ BALTAM_PLUGIN_FCN(copt_feasrelax);
 BALTAM_PLUGIN_FCN(copt_read);
 BALTAM_PLUGIN_FCN(copt_solve);
 BALTAM_PLUGIN_FCN(copt_write);
+
+
+#define MODEL_FIELD_NUM  48
+extern const char* model_fields[MODEL_FIELD_NUM];
+#define RESULT_FIELD_NUM  24
+extern const char* result_fields[RESULT_FIELD_NUM];
+#define IIS_FIELD_NUM  7
+extern const char* iis_fields[IIS_FIELD_NUM];
+#define FEASRELAX_FIELD_NUM  5
+extern const char* feasibility_fields[FEASRELAX_FIELD_NUM];
+#define VERSION_FIELD_NUM  3
+extern const char* version_fields[VERSION_FIELD_NUM];

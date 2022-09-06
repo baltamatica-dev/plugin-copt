@@ -255,7 +255,7 @@ int COPTMEX_getVersion(bxArray **out_version) {
   *bxGetDoubles(coptver.minor) = COPT_VERSION_MINOR;
   *bxGetDoubles(coptver.technical) = COPT_VERSION_TECHNICAL;
 
-  retver = bxCreateStructMatrix(1, 1, 0, NULL);
+  retver = bxCreateStructMatrix(1, 1, VERSION_FIELD_NUM, version_fields);
   if (!retver) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -472,7 +472,7 @@ static int COPTMEX_getLpResult(copt_prob *prob, bxArray **out_lpresult) {
     bxFree(csol.rowBasis);
   }
 
-  lpResult = bxCreateStructMatrix(1, 1, 0, NULL);
+  lpResult = bxCreateStructMatrix(1, 1, RESULT_FIELD_NUM, result_fields);
   if (!lpResult) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -655,7 +655,7 @@ static int COPTMEX_getMipResult(copt_prob *prob, bxArray **out_mipresult) {
     *bxGetDoubles(msol.bestbnd) = csol.dBestBnd;
   }
 
-  mipResult = bxCreateStructMatrix(1, 1, 0, NULL);
+  mipResult = bxCreateStructMatrix(1, 1, RESULT_FIELD_NUM, result_fields);
   if (!mipResult) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -1204,7 +1204,7 @@ int COPTMEX_getModel(copt_prob *prob, int nfiles, const bxArray **in_files,
     bxFree(cprob.rowBasis);
   }
 
-  retmodel = bxCreateStructMatrix(1, 1, 0, NULL);
+  retmodel = bxCreateStructMatrix(1, 1, MODEL_FIELD_NUM, model_fields);
   if (!retmodel) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -2362,7 +2362,7 @@ static int COPTMEX_getIIS(copt_prob *prob, bxArray **out_iis) {
     bxFree(ciisinfo.indicatorIIS);
   }
 
-  iisInfo = bxCreateStructMatrix(1, 1, 0, NULL);
+  iisInfo = bxCreateStructMatrix(1, 1, IIS_FIELD_NUM, iis_fields);
   if (!iisInfo) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
@@ -2501,7 +2501,7 @@ static int COPTMEX_getFeasRelax(copt_prob *prob, bxArray **out_relax) {
     COPTMEX_CALL(COPT_GetRowInfo(prob, COPT_DBLINFO_RELAXUB, nRow, NULL, crelaxinfo.rowUppRlx));
   }
 
-  relaxInfo = bxCreateStructMatrix(1, 1, 0, NULL);
+  relaxInfo = bxCreateStructMatrix(1, 1, FEASRELAX_FIELD_NUM, feasibility_fields);
   if (!relaxInfo) {
     retcode = COPT_RETCODE_MEMORY;
     goto exit_cleanup;
