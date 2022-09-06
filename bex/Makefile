@@ -18,9 +18,6 @@ all: copt/main.$(BEX_EXT)
 
 copt/main.$(BEX_EXT): $(ALL_SRC)
 	$(CXX) $(CXXFLAGS) -o copt/main.$(BEX_EXT)  $(ALL_SRC) $(COPT_DIR)/lib/copt.lib
-	cp $(COPT_DIR)/bin/copt.dll  copt/
-	cp ../lib/*.m  		copt/lib/
-	cp ../examples/* 	copt/
 
 clean:
 	rm -f *.o *.obj *.a *.$(BEX_EXT)
